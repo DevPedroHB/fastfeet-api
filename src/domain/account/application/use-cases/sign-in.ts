@@ -1,5 +1,6 @@
 import { Either, error, success } from "@/core/either";
 import { WrongCredentialsError } from "@/core/errors/wrong-credentials-error";
+import { Injectable } from "@nestjs/common";
 import { Encrypter } from "../cryptography/encypter";
 import { Hasher } from "../cryptography/hasher";
 import { UsersRepository } from "../repositories/users-repository";
@@ -16,6 +17,7 @@ type SignInUseCaseResponse = Either<
   }
 >;
 
+@Injectable()
 export class SignInUseCase {
   constructor(
     private usersRepository: UsersRepository,

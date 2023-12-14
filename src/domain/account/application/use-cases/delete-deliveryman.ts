@@ -1,6 +1,7 @@
 import { Either, error, success } from "@/core/either";
 import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { ResourceNotFoundError } from "@/core/errors/resource-not-found-error";
+import { Injectable } from "@nestjs/common";
 import { UserRole } from "../../enterprise/entities/user";
 import { UsersRepository } from "../repositories/users-repository";
 
@@ -14,6 +15,7 @@ type DeleteDeliverymanUseCaseResponse = Either<
   null
 >;
 
+@Injectable()
 export class DeleteDeliverymanUseCase {
   constructor(private usersRepository: UsersRepository) {}
 

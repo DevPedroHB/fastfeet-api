@@ -1,5 +1,6 @@
 import { Either, error, success } from "@/core/either";
 import { NotAllowedError } from "@/core/errors/not-allowed-error";
+import { Injectable } from "@nestjs/common";
 import { User, UserRole } from "../../enterprise/entities/user";
 import { UsersRepository } from "../repositories/users-repository";
 
@@ -9,10 +10,14 @@ interface FetchDeliverymenUseCaseRequest {
   administratorId: string;
 }
 
-type FetchDeliverymenUseCaseResponse = Either<NotAllowedError, {
-  deliverymen: User[]
-}>;
+type FetchDeliverymenUseCaseResponse = Either<
+  NotAllowedError,
+  {
+    deliverymen: User[];
+  }
+>;
 
+@Injectable()
 export class FetchDeliverymenUseCase {
   constructor(private usersRepository: UsersRepository) {}
 
@@ -29,11 +34,11 @@ export class FetchDeliverymenUseCase {
 
     const deliverymen = await this.usersRepository.findManyDeliverymen({
       page,
-      perPage
-    })
+      perPage,
+    });
 
     return success({
-      deliverymen
+      deliverymen,
     });
   }
 }

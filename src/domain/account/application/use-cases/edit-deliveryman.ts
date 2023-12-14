@@ -1,6 +1,7 @@
 import { Either, error, success } from "@/core/either";
 import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { ResourceNotFoundError } from "@/core/errors/resource-not-found-error";
+import { Injectable } from "@nestjs/common";
 import { User, UserRole } from "../../enterprise/entities/user";
 import { UsersRepository } from "../repositories/users-repository";
 
@@ -19,6 +20,7 @@ type EditDeliverymanUseCaseResponse = Either<
   }
 >;
 
+@Injectable()
 export class EditDeliverymanUseCase {
   constructor(private usersRepository: UsersRepository) {}
 

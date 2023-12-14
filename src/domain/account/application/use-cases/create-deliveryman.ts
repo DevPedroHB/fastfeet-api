@@ -1,6 +1,7 @@
 import { Either, error, success } from "@/core/either";
 import { AlreadyExistsError } from "@/core/errors/already-exists-error";
 import { NotAllowedError } from "@/core/errors/not-allowed-error";
+import { Injectable } from "@nestjs/common";
 import { User, UserRole } from "../../enterprise/entities/user";
 import { Hasher } from "../cryptography/hasher";
 import { UsersRepository } from "../repositories/users-repository";
@@ -20,6 +21,7 @@ type CreateDeliverymanUseCaseResponse = Either<
   }
 >;
 
+@Injectable()
 export class CreateDeliverymanUseCase {
   constructor(
     private usersRepository: UsersRepository,
