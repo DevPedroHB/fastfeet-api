@@ -6,7 +6,7 @@ import { Hasher } from "../cryptography/hasher";
 import { UsersRepository } from "../repositories/users-repository";
 
 interface SignInUseCaseRequest {
-  cpf: number;
+  cpf: string;
   password: string;
 }
 

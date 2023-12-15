@@ -1,44 +1,44 @@
 import { Either, error, success } from "@/core/either";
 import { NotAllowedError } from "@/core/errors/not-allowed-error";
-import { ResourceNotFoundError } from "@/core/errors/resource-not-found-error";
 import { Injectable } from "@nestjs/common";
 import { User, UserRole } from "../../enterprise/entities/user";
 import { UsersRepository } from "../repositories/users-repository";
 
-interface GetDeliverymanUseCaseRequest {
-  deliverymanId: string;
+interface FetchUsersUseCaseRequest {
+  page: number;
+  perPage: number;
   administratorId: string;
 }
 
-type GetDeliverymanUseCaseResponse = Either<
-  NotAllowedError | ResourceNotFoundError,
+type FetchUsersUseCaseResponse = Either<
+  NotAllowedError,
   {
-    deliveryman: User;
+    users: User[];
   }
 >;
 
 @Injectable()
-export class GetDeliverymanUseCase {
+export class FetchUsersUseCase {
   constructor(private usersRepository: UsersRepository) {}
 
   async execute({
-    deliverymanId,
+    page,
+    perPage,
     administratorId,
-  }: GetDeliverymanUseCaseRequest): Promise<GetDeliverymanUseCaseResponse> {
+  }: FetchUsersUseCaseRequest): Promise<FetchUsersUseCaseResponse> {
     const administrator = await this.usersRepository.findById(administratorId);
 
     if (!administrator || administrator.role !== UserRole.ADMINISTRATOR) {
       return error(new NotAllowedError());
     }
 
-    const deliveryman = await this.usersRepository.findById(deliverymanId);
-
-    if (!deliveryman) {
-      return error(new ResourceNotFoundError());
-    }
+    const users = await this.usersRepository.findMany({
+      page,
+      perPage,
+    });
 
     return success({
-      deliveryman,
+      users,
     });
   }
 }

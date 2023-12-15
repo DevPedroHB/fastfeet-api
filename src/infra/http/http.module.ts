@@ -1,36 +1,36 @@
-import { CreateDeliverymanUseCase } from "@/domain/account/application/use-cases/create-deliveryman";
-import { DeleteDeliverymanUseCase } from "@/domain/account/application/use-cases/delete-deliveryman";
-import { EditDeliverymanUseCase } from "@/domain/account/application/use-cases/edit-deliveryman";
-import { FetchDeliverymenUseCase } from "@/domain/account/application/use-cases/fetch-deliverymen";
-import { GetDeliverymanUseCase } from "@/domain/account/application/use-cases/get-deliveryman";
+import { CreateUserUseCase } from "@/domain/account/application/use-cases/create-user";
+import { DeleteUserUseCase } from "@/domain/account/application/use-cases/delete-user";
+import { EditUserUseCase } from "@/domain/account/application/use-cases/edit-user";
+import { FetchUsersUseCase } from "@/domain/account/application/use-cases/fetch-users";
+import { GetUserByIdUseCase } from "@/domain/account/application/use-cases/get-user-by-id";
 import { SignInUseCase } from "@/domain/account/application/use-cases/sign-in";
 import { Module } from "@nestjs/common";
 import { CryptographyModule } from "../cryptography/cryptography.module";
 import { DatabaseModule } from "./../database/database.module";
-import { CreateDeliverymanController } from "./controllers/account/create-deliveryman.controller";
-import { DeleteDeliverymanController } from "./controllers/account/delete-deliveryman.controller";
-import { EditDeliverymanController } from "./controllers/account/edit-deliveryman.controller";
-import { FetchDeliverymenController } from "./controllers/account/fetch-deliverymen.controller";
-import { GetDeliverymanController } from "./controllers/account/get-deliveryman.controller";
+import { CreateUserController } from "./controllers/account/create-user.controller";
+import { DeleteUserController } from "./controllers/account/delete-user.controller";
+import { EditUserController } from "./controllers/account/edit-user.controller";
+import { FetchUsersController } from "./controllers/account/fetch-users.controller";
+import { GetUserByIdController } from "./controllers/account/get-user-by-id.controller";
 import { SignInController } from "./controllers/account/sign-in.controller";
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
   controllers: [
+    CreateUserController,
+    DeleteUserController,
+    EditUserController,
+    FetchUsersController,
+    GetUserByIdController,
     SignInController,
-    CreateDeliverymanController,
-    EditDeliverymanController,
-    DeleteDeliverymanController,
-    GetDeliverymanController,
-    FetchDeliverymenController,
   ],
   providers: [
+    CreateUserUseCase,
+    DeleteUserUseCase,
+    EditUserUseCase,
+    FetchUsersUseCase,
+    GetUserByIdUseCase,
     SignInUseCase,
-    CreateDeliverymanUseCase,
-    EditDeliverymanUseCase,
-    DeleteDeliverymanUseCase,
-    GetDeliverymanUseCase,
-    FetchDeliverymenUseCase,
   ],
 })
 export class HttpModule {}

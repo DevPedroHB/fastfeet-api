@@ -23,7 +23,7 @@ export async function fabricateUser({
     const user = await client.user.create({
       data: {
         name: faker.person.fullName(),
-        cpf: Number(faker.helpers.replaceSymbols("###########")),
+        cpf: faker.helpers.replaceSymbols("###########"),
         password: hashedPassword,
       },
     });

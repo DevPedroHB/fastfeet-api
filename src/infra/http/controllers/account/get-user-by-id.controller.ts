@@ -1,5 +1,5 @@
 import { NotAllowedError } from "@/core/errors/not-allowed-error";
-import { GetDeliverymanUseCase } from "@/domain/account/application/use-cases/get-deliveryman";
+import { GetUserByIdUseCase } from "@/domain/account/application/use-cases/get-user-by-id";
 import { CurrentUser } from "@/infra/auth/current-user-decorator";
 import { UserPayload } from "@/infra/auth/jwt.strategy";
 import {
@@ -12,19 +12,14 @@ import {
 import { UserPresenter } from "../../presenters/user-presenter";
 
 @Controller({ path: "/users/:id", version: "v1" })
-export class GetDeliverymanController {
-  constructor(private getDeliveryman: GetDeliverymanUseCase) {}
+export class GetUserByIdController {
+  constructor(private getUserById: GetUserByIdUseCase) {}
 
   @Get()
-  async handle(
-    @CurrentUser() user: UserPayload,
-    @Param("id") deliverymanId: string,
-  ) {
-    const userId = user.sub;
-
-    const result = await this.getDeliveryman.execute({
-      deliverymanId,
-      administratorId: userId,
+  async handle(@CurrentUser() user: UserPayload, @Param("id") userId: string) {
+    const result = await this.getUserById.execute({
+      userId,
+      administratorId: user.sub,
     });
 
     if (result.isError()) {
@@ -39,7 +34,7 @@ export class GetDeliverymanController {
     }
 
     return {
-      deliveryman: UserPresenter.toHTTP(result.value.deliveryman),
+      user: UserPresenter.toHTTP(result.value.user),
     };
   }
 }

@@ -1,5 +1,5 @@
 import { NotAllowedError } from "@/core/errors/not-allowed-error";
-import { EditDeliverymanUseCase } from "@/domain/account/application/use-cases/edit-deliveryman";
+import { EditUserUseCase } from "@/domain/account/application/use-cases/edit-user";
 import { CurrentUser } from "@/infra/auth/current-user-decorator";
 import { UserPayload } from "@/infra/auth/jwt.strategy";
 import { ZodValidationPipe } from "@/infra/http/pipes/zod-validation.pipe";
@@ -14,36 +14,37 @@ import {
 } from "@nestjs/common";
 import { z } from "zod";
 
-const editDeliverymanBodySchema = z.object({
+const editUserBodySchema = z.object({
   name: z.string().min(3),
-  cpf: z.string().min(11).max(11).transform(Number),
-  role: z.enum(["ADMINISTRATOR", "DELIVERYMAN"]).optional(),
+  cpf: z.string().min(11).max(11),
+  password: z.string().min(6).optional(),
+  role: z.enum(["ADMINISTRATOR", "USER"]).optional(),
 });
 
-const bodyValidationPipe = new ZodValidationPipe(editDeliverymanBodySchema);
+const bodyValidationPipe = new ZodValidationPipe(editUserBodySchema);
 
-type EditDeliverymanBodySchema = z.infer<typeof editDeliverymanBodySchema>;
+type EditUserBodySchema = z.infer<typeof editUserBodySchema>;
 
 @Controller({ path: "/users/:id", version: "v1" })
-export class EditDeliverymanController {
-  constructor(private editDeliveryman: EditDeliverymanUseCase) {}
+export class EditUserController {
+  constructor(private editUser: EditUserUseCase) {}
 
   @Put()
   @HttpCode(204)
   async handle(
-    @Body(bodyValidationPipe) body: EditDeliverymanBodySchema,
+    @Body(bodyValidationPipe) body: EditUserBodySchema,
     @CurrentUser() user: UserPayload,
-    @Param("id") deliverymanId: string,
+    @Param("id") userId: string,
   ) {
-    const { name, cpf, role } = body;
-    const userId = user.sub;
+    const { name, cpf, password, role } = body;
 
-    const result = await this.editDeliveryman.execute({
-      deliverymanId,
+    const result = await this.editUser.execute({
+      userId,
       name,
       cpf,
+      password,
       role,
-      administratorId: userId,
+      administratorId: user.sub,
     });
 
     if (result.isError()) {

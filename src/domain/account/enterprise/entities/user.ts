@@ -9,7 +9,7 @@ export enum UserRole {
 
 export interface IUser {
   name: string;
-  cpf: number;
+  cpf: string;
   password: string;
   role: UserRole;
   createdAt: Date;
@@ -31,7 +31,7 @@ export class User extends Entity<IUser> {
     return this.props.cpf;
   }
 
-  set cpf(cpf: number) {
+  set cpf(cpf: string) {
     this.props.cpf = cpf;
 
     this.touch();

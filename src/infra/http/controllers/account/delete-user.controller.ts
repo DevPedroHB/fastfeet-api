@@ -1,5 +1,5 @@
 import { NotAllowedError } from "@/core/errors/not-allowed-error";
-import { DeleteDeliverymanUseCase } from "@/domain/account/application/use-cases/delete-deliveryman";
+import { DeleteUserUseCase } from "@/domain/account/application/use-cases/delete-user";
 import { CurrentUser } from "@/infra/auth/current-user-decorator";
 import { UserPayload } from "@/infra/auth/jwt.strategy";
 import {
@@ -12,20 +12,15 @@ import {
 } from "@nestjs/common";
 
 @Controller({ path: "/users/:id", version: "v1" })
-export class DeleteDeliverymanController {
-  constructor(private deleteDeliveryman: DeleteDeliverymanUseCase) {}
+export class DeleteUserController {
+  constructor(private deleteUser: DeleteUserUseCase) {}
 
   @Delete()
   @HttpCode(204)
-  async handle(
-    @CurrentUser() user: UserPayload,
-    @Param("id") deliverymanId: string,
-  ) {
-    const userId = user.sub;
-
-    const result = await this.deleteDeliveryman.execute({
-      deliverymanId,
-      administratorId: userId,
+  async handle(@CurrentUser() user: UserPayload, @Param("id") userId: string) {
+    const result = await this.deleteUser.execute({
+      userId,
+      administratorId: user.sub,
     });
 
     if (result.isError()) {

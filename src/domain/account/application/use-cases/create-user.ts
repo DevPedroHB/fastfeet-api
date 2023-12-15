@@ -6,23 +6,23 @@ import { User, UserRole } from "../../enterprise/entities/user";
 import { Hasher } from "../cryptography/hasher";
 import { UsersRepository } from "../repositories/users-repository";
 
-interface CreateDeliverymanUseCaseRequest {
+interface CreateUserUseCaseRequest {
   name: string;
-  cpf: number;
+  cpf: string;
   password: string;
   role?: string;
   administratorId: string;
 }
 
-type CreateDeliverymanUseCaseResponse = Either<
+type CreateUserUseCaseResponse = Either<
   NotAllowedError | AlreadyExistsError,
   {
-    deliveryman: User;
+    user: User;
   }
 >;
 
 @Injectable()
-export class CreateDeliverymanUseCase {
+export class CreateUserUseCase {
   constructor(
     private usersRepository: UsersRepository,
     private hasher: Hasher,
@@ -34,7 +34,7 @@ export class CreateDeliverymanUseCase {
     password,
     role,
     administratorId,
-  }: CreateDeliverymanUseCaseRequest): Promise<CreateDeliverymanUseCaseResponse> {
+  }: CreateUserUseCaseRequest): Promise<CreateUserUseCaseResponse> {
     const administrator = await this.usersRepository.findById(administratorId);
 
     if (!administrator || administrator.role !== UserRole.ADMINISTRATOR) {
@@ -44,22 +44,22 @@ export class CreateDeliverymanUseCase {
     const deliveryWithSameCpf = await this.usersRepository.findByCpf(cpf);
 
     if (deliveryWithSameCpf) {
-      return error(new AlreadyExistsError("Deliveryman with same CPF"));
+      return error(new AlreadyExistsError("User with same CPF"));
     }
 
     const hashedPassword = await this.hasher.hash(password);
 
-    const deliveryman = User.create({
+    const user = User.create({
       name,
       cpf,
       password: hashedPassword,
       role: role && UserRole[role],
     });
 
-    await this.usersRepository.create(deliveryman);
+    await this.usersRepository.create(user);
 
     return success({
-      deliveryman,
+      user,
     });
   }
 }

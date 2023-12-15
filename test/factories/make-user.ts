@@ -9,7 +9,7 @@ export function makeUser(override: Partial<IUser> = {}, id?: UniqueEntityID) {
   const user = User.create(
     {
       name: faker.person.fullName(),
-      cpf: Number(faker.helpers.replaceSymbols("###########")),
+      cpf: faker.helpers.replaceSymbols("###########"),
       password: faker.internet.password(),
       ...override,
     },

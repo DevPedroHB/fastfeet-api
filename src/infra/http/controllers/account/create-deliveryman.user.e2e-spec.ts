@@ -1,14 +1,16 @@
 import { UserRole } from "@/domain/account/enterprise/entities/user";
 import { AppModule } from "@/infra/app.module";
 import { DatabaseModule } from "@/infra/database/database.module";
+import { PrismaService } from "@/infra/database/prisma/prisma.service";
 import { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
 import { UserFactory } from "test/factories/make-user";
 
-describe("Fetch deliverymen (E2E)", () => {
+describe("Create user (E2E)", () => {
   let app: INestApplication;
+  let prisma: PrismaService;
   let userFactory: UserFactory;
   let jwt: JwtService;
 
@@ -20,13 +22,14 @@ describe("Fetch deliverymen (E2E)", () => {
 
     app = moduleRef.createNestApplication();
 
+    prisma = moduleRef.get(PrismaService);
     userFactory = moduleRef.get(UserFactory);
     jwt = moduleRef.get(JwtService);
 
     await app.init();
   });
 
-  test("[GET] /users", async () => {
+  test("[POST] /users", async () => {
     const administrator = await userFactory.makePrismaUser({
       role: UserRole.ADMINISTRATOR,
     });
@@ -34,16 +37,23 @@ describe("Fetch deliverymen (E2E)", () => {
       sub: administrator.id.toString(),
     });
 
-    for (let i = 0; i < 5; i++) {
-      await userFactory.makePrismaUser();
-    }
-
     const response = await request(app.getHttpServer())
-      .get(`/users`)
+      .post(`/users`)
       .set("Authorization", `Bearer ${accessToken}`)
-      .send();
+      .send({
+        name: "An example name",
+        cpf: "12345678901",
+        password: "an-example-password",
+      });
 
-    expect(response.statusCode).toBe(200);
-    expect(response.body.deliverymen).toHaveLength(6);
+    expect(response.statusCode).toBe(201);
+
+    const userOnDatabase = await prisma.user.findFirst({
+      where: {
+        name: "An example name",
+      },
+    });
+
+    expect(userOnDatabase).toBeTruthy();
   });
 });

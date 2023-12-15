@@ -1,14 +1,16 @@
 import { UserRole } from "@/domain/account/enterprise/entities/user";
 import { AppModule } from "@/infra/app.module";
 import { DatabaseModule } from "@/infra/database/database.module";
+import { PrismaService } from "@/infra/database/prisma/prisma.service";
 import { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
 import { UserFactory } from "test/factories/make-user";
 
-describe("Get deliveryman (E2E)", () => {
+describe("Edit user (E2E)", () => {
   let app: INestApplication;
+  let prisma: PrismaService;
   let userFactory: UserFactory;
   let jwt: JwtService;
 
@@ -20,13 +22,14 @@ describe("Get deliveryman (E2E)", () => {
 
     app = moduleRef.createNestApplication();
 
+    prisma = moduleRef.get(PrismaService);
     userFactory = moduleRef.get(UserFactory);
     jwt = moduleRef.get(JwtService);
 
     await app.init();
   });
 
-  test("[GET] /users/:id", async () => {
+  test("[PUT] /users/:id", async () => {
     const administrator = await userFactory.makePrismaUser({
       role: UserRole.ADMINISTRATOR,
     });
@@ -36,15 +39,22 @@ describe("Get deliveryman (E2E)", () => {
     });
 
     const response = await request(app.getHttpServer())
-      .get(`/users/${user.id.toString()}`)
+      .put(`/users/${user.id.toString()}`)
       .set("Authorization", `Bearer ${accessToken}`)
-      .send();
+      .send({
+        name: "New name",
+        cpf: "10987654321",
+      });
 
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
-      deliveryman: expect.objectContaining({
-        name: user.name,
-      }),
+    expect(response.statusCode).toBe(204);
+
+    const userOnDatabase = await prisma.user.findFirst({
+      where: {
+        name: "New name",
+        cpf: "10987654321",
+      },
     });
+
+    expect(userOnDatabase).toBeTruthy();
   });
 });

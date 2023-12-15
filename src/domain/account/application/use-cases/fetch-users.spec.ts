@@ -1,32 +1,35 @@
 import { makeUser } from "test/factories/make-user";
 import { InMemoryUsersRepository } from "test/repositories/in-memory-users-repository";
 import { UserRole } from "../../enterprise/entities/user";
-import { DeleteDeliverymanUseCase } from "./delete-deliveryman";
+import { FetchUsersUseCase } from "./fetch-users";
 
 let inMemoryUsersRepository: InMemoryUsersRepository;
-let sut: DeleteDeliverymanUseCase;
+let sut: FetchUsersUseCase;
 
-describe("Delete deliveryman", () => {
+describe("Fetch users", () => {
   beforeEach(() => {
     inMemoryUsersRepository = new InMemoryUsersRepository();
-    sut = new DeleteDeliverymanUseCase(inMemoryUsersRepository);
+    sut = new FetchUsersUseCase(inMemoryUsersRepository);
   });
 
-  it("should be able to delete a deliveryman", async () => {
+  it("should be able to fetch users", async () => {
     const administrator = makeUser({
       role: UserRole.ADMINISTRATOR,
     });
-    const deliveryman = makeUser();
 
     await inMemoryUsersRepository.create(administrator);
-    await inMemoryUsersRepository.create(deliveryman);
+
+    for (let i = 0; i < 22; i++) {
+      await inMemoryUsersRepository.create(makeUser());
+    }
 
     const result = await sut.execute({
-      deliverymanId: deliveryman.id.toString(),
+      page: 1,
+      perPage: 20,
       administratorId: administrator.id.toString(),
     });
 
     expect(result.isSuccess()).toBe(true);
-    expect(inMemoryUsersRepository.items).toHaveLength(1);
+    expect(result.isSuccess() && result.value.users).toHaveLength(20);
   });
 });

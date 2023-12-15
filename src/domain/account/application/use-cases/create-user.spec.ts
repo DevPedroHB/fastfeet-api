@@ -2,20 +2,20 @@ import { FakeHasher } from "test/cryptography/fake-hasher";
 import { makeUser } from "test/factories/make-user";
 import { InMemoryUsersRepository } from "test/repositories/in-memory-users-repository";
 import { UserRole } from "../../enterprise/entities/user";
-import { CreateDeliverymanUseCase } from "./create-deliveryman";
+import { CreateUserUseCase } from "./create-user";
 
 let inMemoryUsersRepository: InMemoryUsersRepository;
 let fakeHasher: FakeHasher;
-let sut: CreateDeliverymanUseCase;
+let sut: CreateUserUseCase;
 
-describe("Create deliveryman", () => {
+describe("Create user", () => {
   beforeEach(() => {
     inMemoryUsersRepository = new InMemoryUsersRepository();
     fakeHasher = new FakeHasher();
-    sut = new CreateDeliverymanUseCase(inMemoryUsersRepository, fakeHasher);
+    sut = new CreateUserUseCase(inMemoryUsersRepository, fakeHasher);
   });
 
-  it("should be able to crete a deliveryman", async () => {
+  it("should be able to crete a user", async () => {
     const administrator = makeUser({
       role: UserRole.ADMINISTRATOR,
     });
@@ -24,7 +24,7 @@ describe("Create deliveryman", () => {
 
     const result = await sut.execute({
       name: "An example name",
-      cpf: 12345678901,
+      cpf: "12345678901",
       password: "123456",
       administratorId: administrator.id.toString(),
     });
@@ -34,7 +34,7 @@ describe("Create deliveryman", () => {
       expect.arrayContaining([
         expect.objectContaining({
           name: "An example name",
-          cpf: 12345678901,
+          cpf: "12345678901",
           password: await fakeHasher.hash("123456"),
         }),
       ]),

@@ -1,5 +1,5 @@
 import { NotAllowedError } from "@/core/errors/not-allowed-error";
-import { FetchDeliverymenUseCase } from "@/domain/account/application/use-cases/fetch-deliverymen";
+import { FetchUsersUseCase } from "@/domain/account/application/use-cases/fetch-users";
 import { CurrentUser } from "@/infra/auth/current-user-decorator";
 import { UserPayload } from "@/infra/auth/jwt.strategy";
 import {
@@ -25,18 +25,16 @@ const queryValidationPipe = new ZodValidationPipe(pageQuerySchema);
 type PageQuerySchema = z.infer<typeof pageQuerySchema>;
 
 @Controller({ path: "/users", version: "v1" })
-export class FetchDeliverymenController {
-  constructor(private fetchDeliverymen: FetchDeliverymenUseCase) {}
+export class FetchUsersController {
+  constructor(private fetchUsers: FetchUsersUseCase) {}
 
   @Get()
   async handle(
     @CurrentUser() user: UserPayload,
     @Query("page", queryValidationPipe) page: PageQuerySchema,
   ) {
-    const userId = user.sub;
-
-    const result = await this.fetchDeliverymen.execute({
-      administratorId: userId,
+    const result = await this.fetchUsers.execute({
+      administratorId: user.sub,
       page,
       perPage: 20,
     });
@@ -53,7 +51,7 @@ export class FetchDeliverymenController {
     }
 
     return {
-      deliverymen: result.value.deliverymen.map(UserPresenter.toHTTP),
+      users: result.value.users.map(UserPresenter.toHTTP),
     };
   }
 }

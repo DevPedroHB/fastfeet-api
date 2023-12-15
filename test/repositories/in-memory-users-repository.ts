@@ -15,7 +15,7 @@ export class InMemoryUsersRepository implements UsersRepository {
     return item;
   }
 
-  async findByCpf(cpf: number) {
+  async findByCpf(cpf: string) {
     const item = this.items.find((item) => item.cpf === cpf);
 
     if (!item) {
@@ -25,7 +25,7 @@ export class InMemoryUsersRepository implements UsersRepository {
     return item;
   }
 
-  async findManyDeliverymen({ page, perPage }: PaginationParams) {
+  async findMany({ page, perPage }: PaginationParams) {
     const items = this.items
       .sort((a, b) => a.name.localeCompare(b.name))
       .sort((a, b) => a.role.localeCompare(b.role))

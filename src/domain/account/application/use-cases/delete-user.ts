@@ -5,37 +5,37 @@ import { Injectable } from "@nestjs/common";
 import { UserRole } from "../../enterprise/entities/user";
 import { UsersRepository } from "../repositories/users-repository";
 
-interface DeleteDeliverymanUseCaseRequest {
-  deliverymanId: string;
+interface DeleteUserUseCaseRequest {
+  userId: string;
   administratorId: string;
 }
 
-type DeleteDeliverymanUseCaseResponse = Either<
+type DeleteUserUseCaseResponse = Either<
   NotAllowedError | ResourceNotFoundError,
   null
 >;
 
 @Injectable()
-export class DeleteDeliverymanUseCase {
+export class DeleteUserUseCase {
   constructor(private usersRepository: UsersRepository) {}
 
   async execute({
-    deliverymanId,
+    userId,
     administratorId,
-  }: DeleteDeliverymanUseCaseRequest): Promise<DeleteDeliverymanUseCaseResponse> {
+  }: DeleteUserUseCaseRequest): Promise<DeleteUserUseCaseResponse> {
     const administrator = await this.usersRepository.findById(administratorId);
 
     if (!administrator || administrator.role !== UserRole.ADMINISTRATOR) {
       return error(new NotAllowedError());
     }
 
-    const deliveryman = await this.usersRepository.findById(deliverymanId);
+    const user = await this.usersRepository.findById(userId);
 
-    if (!deliveryman) {
+    if (!user) {
       return error(new ResourceNotFoundError());
     }
 
-    await this.usersRepository.delete(deliveryman);
+    await this.usersRepository.delete(user);
 
     return success(null);
   }

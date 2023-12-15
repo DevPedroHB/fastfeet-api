@@ -1,6 +1,6 @@
 import { AlreadyExistsError } from "@/core/errors/already-exists-error";
 import { NotAllowedError } from "@/core/errors/not-allowed-error";
-import { CreateDeliverymanUseCase } from "@/domain/account/application/use-cases/create-deliveryman";
+import { CreateUserUseCase } from "@/domain/account/application/use-cases/create-user";
 import { CurrentUser } from "@/infra/auth/current-user-decorator";
 import { UserPayload } from "@/infra/auth/jwt.strategy";
 import { ZodValidationPipe } from "@/infra/http/pipes/zod-validation.pipe";
@@ -14,35 +14,34 @@ import {
 } from "@nestjs/common";
 import { z } from "zod";
 
-const createDeliverymanBodySchema = z.object({
+const createUserBodySchema = z.object({
   name: z.string().min(3),
-  cpf: z.string().min(11).max(11).transform(Number),
+  cpf: z.string().min(11).max(11),
   password: z.string().min(6),
-  role: z.enum(["ADMINISTRATOR", "DELIVERYMAN"]).optional(),
+  role: z.enum(["ADMINISTRATOR", "USER"]).optional(),
 });
 
-const bodyValidationPipe = new ZodValidationPipe(createDeliverymanBodySchema);
+const bodyValidationPipe = new ZodValidationPipe(createUserBodySchema);
 
-type CreateDeliverymanBodySchema = z.infer<typeof createDeliverymanBodySchema>;
+type CreateUserBodySchema = z.infer<typeof createUserBodySchema>;
 
 @Controller({ path: "/users", version: "v1" })
-export class CreateDeliverymanController {
-  constructor(private createDeliveryman: CreateDeliverymanUseCase) {}
+export class CreateUserController {
+  constructor(private createUser: CreateUserUseCase) {}
 
   @Post()
   async handle(
-    @Body(bodyValidationPipe) body: CreateDeliverymanBodySchema,
+    @Body(bodyValidationPipe) body: CreateUserBodySchema,
     @CurrentUser() user: UserPayload,
   ) {
     const { name, cpf, password, role } = body;
-    const userId = user.sub;
 
-    const result = await this.createDeliveryman.execute({
+    const result = await this.createUser.execute({
       name,
       cpf,
       password,
       role,
-      administratorId: userId,
+      administratorId: user.sub,
     });
 
     if (result.isError()) {

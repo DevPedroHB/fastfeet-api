@@ -3,54 +3,66 @@ import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { ResourceNotFoundError } from "@/core/errors/resource-not-found-error";
 import { Injectable } from "@nestjs/common";
 import { User, UserRole } from "../../enterprise/entities/user";
+import { Hasher } from "../cryptography/hasher";
 import { UsersRepository } from "../repositories/users-repository";
 
-interface EditDeliverymanUseCaseRequest {
-  deliverymanId: string;
+interface EditUserUseCaseRequest {
+  userId: string;
   name: string;
-  cpf: number;
+  cpf: string;
+  password?: string;
   role?: string;
   administratorId: string;
 }
 
-type EditDeliverymanUseCaseResponse = Either<
+type EditUserUseCaseResponse = Either<
   NotAllowedError | ResourceNotFoundError,
   {
-    deliveryman: User;
+    user: User;
   }
 >;
 
 @Injectable()
-export class EditDeliverymanUseCase {
-  constructor(private usersRepository: UsersRepository) {}
+export class EditUserUseCase {
+  constructor(
+    private usersRepository: UsersRepository,
+    private hasher: Hasher,
+  ) {}
 
   async execute({
-    deliverymanId,
+    userId,
     name,
     cpf,
+    password,
     role,
     administratorId,
-  }: EditDeliverymanUseCaseRequest): Promise<EditDeliverymanUseCaseResponse> {
+  }: EditUserUseCaseRequest): Promise<EditUserUseCaseResponse> {
     const administrator = await this.usersRepository.findById(administratorId);
 
     if (!administrator || administrator.role !== UserRole.ADMINISTRATOR) {
       return error(new NotAllowedError());
     }
 
-    const deliveryman = await this.usersRepository.findById(deliverymanId);
+    const user = await this.usersRepository.findById(userId);
 
-    if (!deliveryman) {
+    if (!user) {
       return error(new ResourceNotFoundError());
     }
 
-    deliveryman.name = name;
-    deliveryman.cpf = cpf;
-    deliveryman.role = role ? UserRole[role] : deliveryman.role;
+    if (password) {
+      const hashedPassword = await this.hasher.hash(password);
 
-    await this.usersRepository.save(deliveryman);
+      user.password = hashedPassword;
+    }
+
+    user.name = name;
+    user.cpf = cpf;
+    user.role = role ? UserRole[role] : user.role;
+
+    await this.usersRepository.save(user);
 
     return success({
-      deliveryman,
+      user,
     });
   }
 }

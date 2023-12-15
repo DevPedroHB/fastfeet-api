@@ -1,34 +1,34 @@
 import { makeUser } from "test/factories/make-user";
 import { InMemoryUsersRepository } from "test/repositories/in-memory-users-repository";
 import { UserRole } from "../../enterprise/entities/user";
-import { GetDeliverymanUseCase } from "./get-deliveryman";
+import { GetUserByIdUseCase } from "./get-user-by-id";
 
 let inMemoryUsersRepository: InMemoryUsersRepository;
-let sut: GetDeliverymanUseCase;
+let sut: GetUserByIdUseCase;
 
-describe("Get deliveryman", () => {
+describe("Get user by id", () => {
   beforeEach(() => {
     inMemoryUsersRepository = new InMemoryUsersRepository();
-    sut = new GetDeliverymanUseCase(inMemoryUsersRepository);
+    sut = new GetUserByIdUseCase(inMemoryUsersRepository);
   });
 
-  it("should be able to get a deliveryman", async () => {
+  it("should be able to get a user by id", async () => {
     const administrator = makeUser({
       role: UserRole.ADMINISTRATOR,
     });
-    const deliveryman = makeUser();
+    const user = makeUser();
 
     await inMemoryUsersRepository.create(administrator);
-    await inMemoryUsersRepository.create(deliveryman);
+    await inMemoryUsersRepository.create(user);
 
     const result = await sut.execute({
-      deliverymanId: deliveryman.id.toString(),
+      userId: user.id.toString(),
       administratorId: administrator.id.toString(),
     });
 
     expect(result.isSuccess()).toBe(true);
     expect(inMemoryUsersRepository.items).toEqual(
-      expect.arrayContaining([expect.objectContaining(deliveryman)]),
+      expect.arrayContaining([expect.objectContaining(user)]),
     );
   });
 });

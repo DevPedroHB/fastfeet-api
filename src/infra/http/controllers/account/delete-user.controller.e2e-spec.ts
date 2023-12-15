@@ -8,7 +8,7 @@ import { Test } from "@nestjs/testing";
 import request from "supertest";
 import { UserFactory } from "test/factories/make-user";
 
-describe("Create deliveryman (E2E)", () => {
+describe("Delete user (E2E)", () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let userFactory: UserFactory;
@@ -29,31 +29,28 @@ describe("Create deliveryman (E2E)", () => {
     await app.init();
   });
 
-  test("[POST] /users", async () => {
+  test("[DELETE] /users/:id", async () => {
     const administrator = await userFactory.makePrismaUser({
       role: UserRole.ADMINISTRATOR,
     });
+    const user = await userFactory.makePrismaUser();
     const accessToken = jwt.sign({
       sub: administrator.id.toString(),
     });
 
     const response = await request(app.getHttpServer())
-      .post(`/users`)
+      .delete(`/users/${user.id.toString()}`)
       .set("Authorization", `Bearer ${accessToken}`)
-      .send({
-        name: "An example name",
-        cpf: "12345678901",
-        password: "an-example-password",
-      });
+      .send();
 
-    expect(response.statusCode).toBe(201);
+    expect(response.statusCode).toBe(204);
 
-    const userOnDatabase = await prisma.user.findFirst({
+    const userOnDatabase = await prisma.user.findUnique({
       where: {
-        name: "An example name",
+        id: user.id.toString(),
       },
     });
 
-    expect(userOnDatabase).toBeTruthy();
+    expect(userOnDatabase).toBeNull();
   });
 });

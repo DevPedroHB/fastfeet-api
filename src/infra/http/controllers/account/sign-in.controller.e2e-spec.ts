@@ -25,7 +25,7 @@ describe("Sign in (E2E)", () => {
 
   test("[POST] /sign-in", async () => {
     await userFactory.makePrismaUser({
-      cpf: 12345678901,
+      cpf: "12345678901",
       password: await hash("123456", 8),
     });
 

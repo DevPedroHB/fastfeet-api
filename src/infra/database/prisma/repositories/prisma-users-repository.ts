@@ -16,7 +16,7 @@ export class PrismaUsersRepository implements UsersRepository {
     const cacheHit = await this.cache.get(`user:${id}`);
 
     if (cacheHit) {
-      return JSON.parse(cacheHit);
+      return PrismaUserMapper.toDomain(JSON.parse(cacheHit));
     }
 
     const user = await this.prisma.user.findUnique({
@@ -29,14 +29,12 @@ export class PrismaUsersRepository implements UsersRepository {
       return null;
     }
 
-    const domain = PrismaUserMapper.toDomain(user);
+    await this.cache.set(`user:${user.id}`, JSON.stringify(user));
 
-    await this.cache.set(`user:${user.id}`, JSON.stringify(domain));
-
-    return domain;
+    return PrismaUserMapper.toDomain(user);
   }
 
-  async findByCpf(cpf: number) {
+  async findByCpf(cpf: string) {
     const user = await this.prisma.user.findUnique({
       where: {
         cpf,
@@ -50,7 +48,7 @@ export class PrismaUsersRepository implements UsersRepository {
     return PrismaUserMapper.toDomain(user);
   }
 
-  async findManyDeliverymen({ page, perPage }: PaginationParams) {
+  async findMany({ page, perPage }: PaginationParams) {
     const users = await this.prisma.user.findMany({
       orderBy: [
         {
@@ -84,6 +82,8 @@ export class PrismaUsersRepository implements UsersRepository {
       },
       data,
     });
+
+    this.cache.delete(`user:${data.id}`);
   }
 
   async delete(user: User) {
@@ -92,5 +92,7 @@ export class PrismaUsersRepository implements UsersRepository {
         id: user.id.toString(),
       },
     });
+
+    this.cache.delete(`user:${user.id.toString()}`);
   }
 }

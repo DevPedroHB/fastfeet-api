@@ -11,7 +11,7 @@ export class PrismaUserMapper {
     return User.create(
       {
         name: raw.name,
-        cpf: Number(raw.cpf),
+        cpf: raw.cpf,
         password: raw.password,
         role: UserRole[raw.role],
       },
@@ -23,7 +23,7 @@ export class PrismaUserMapper {
     return {
       id: user.id.toString(),
       name: user.name,
-      cpf: BigInt(user.cpf),
+      cpf: user.cpf,
       password: user.password,
       role: PrismaUserRole[user.role],
     };
