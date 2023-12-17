@@ -27,8 +27,11 @@ describe("Get user by id", () => {
     });
 
     expect(result.isSuccess()).toBe(true);
-    expect(inMemoryUsersRepository.items).toEqual(
-      expect.arrayContaining([expect.objectContaining(user)]),
-    );
+    expect(result.value).toMatchObject({
+      user: expect.objectContaining({
+        name: user.name,
+        cpf: user.cpf,
+      }),
+    });
   });
 });

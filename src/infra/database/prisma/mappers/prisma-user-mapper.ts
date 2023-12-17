@@ -1,5 +1,6 @@
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { User, UserRole } from "@/domain/account/enterprise/entities/user";
+import { CPF } from "@/domain/account/enterprise/entities/value-objects/cpf";
 import {
   Prisma,
   User as PrismaUser,
@@ -11,7 +12,7 @@ export class PrismaUserMapper {
     return User.create(
       {
         name: raw.name,
-        cpf: raw.cpf,
+        cpf: CPF.create(raw.cpf),
         password: raw.password,
         role: UserRole[raw.role],
       },
@@ -23,7 +24,7 @@ export class PrismaUserMapper {
     return {
       id: user.id.toString(),
       name: user.name,
-      cpf: user.cpf,
+      cpf: user.cpf.value,
       password: user.password,
       role: PrismaUserRole[user.role],
     };

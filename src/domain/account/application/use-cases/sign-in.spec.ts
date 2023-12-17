@@ -25,7 +25,7 @@ describe("Sign in", () => {
     await inMemoryUsersRepository.create(user);
 
     const result = await sut.execute({
-      cpf: user.cpf,
+      cpf: user.cpf.value,
       password: "123456",
     });
 

@@ -12,7 +12,7 @@ import {
 import { z } from "zod";
 
 const signInBodySchema = z.object({
-  cpf: z.string().min(11).max(11),
+  cpf: z.string().min(14).max(14),
   password: z.string().min(6),
 });
 

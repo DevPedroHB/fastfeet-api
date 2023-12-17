@@ -16,8 +16,7 @@ import { z } from "zod";
 
 const editUserBodySchema = z.object({
   name: z.string().min(3),
-  cpf: z.string().min(11).max(11),
-  password: z.string().min(6).optional(),
+  cpf: z.string().min(14).max(14),
   role: z.enum(["ADMINISTRATOR", "USER"]).optional(),
 });
 
@@ -36,13 +35,12 @@ export class EditUserController {
     @CurrentUser() user: UserPayload,
     @Param("id") userId: string,
   ) {
-    const { name, cpf, password, role } = body;
+    const { name, cpf, role } = body;
 
     const result = await this.editUser.execute({
       userId,
       name,
       cpf,
-      password,
       role,
       administratorId: user.sub,
     });

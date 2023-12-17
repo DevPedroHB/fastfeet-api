@@ -3,6 +3,7 @@ import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { ResourceNotFoundError } from "@/core/errors/resource-not-found-error";
 import { Injectable } from "@nestjs/common";
 import { User, UserRole } from "../../enterprise/entities/user";
+import { CPF } from "../../enterprise/entities/value-objects/cpf";
 import { Hasher } from "../cryptography/hasher";
 import { UsersRepository } from "../repositories/users-repository";
 
@@ -10,7 +11,6 @@ interface EditUserUseCaseRequest {
   userId: string;
   name: string;
   cpf: string;
-  password?: string;
   role?: string;
   administratorId: string;
 }
@@ -33,7 +33,6 @@ export class EditUserUseCase {
     userId,
     name,
     cpf,
-    password,
     role,
     administratorId,
   }: EditUserUseCaseRequest): Promise<EditUserUseCaseResponse> {
@@ -49,14 +48,8 @@ export class EditUserUseCase {
       return error(new ResourceNotFoundError());
     }
 
-    if (password) {
-      const hashedPassword = await this.hasher.hash(password);
-
-      user.password = hashedPassword;
-    }
-
     user.name = name;
-    user.cpf = cpf;
+    user.cpf = CPF.create(cpf);
     user.role = role ? UserRole[role] : user.role;
 
     await this.usersRepository.save(user);

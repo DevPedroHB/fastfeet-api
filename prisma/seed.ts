@@ -37,7 +37,7 @@ async function run() {
   await client.user.create({
     data: {
       name: "Pedro Henrique Bérgamo",
-      cpf: "54611266850",
+      cpf: "546.112.668-50",
       password: hashedPassword,
       role: "ADMINISTRATOR",
     },

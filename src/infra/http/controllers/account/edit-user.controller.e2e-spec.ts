@@ -43,15 +43,14 @@ describe("Edit user (E2E)", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         name: "New name",
-        cpf: "10987654321",
+        cpf: "109.876.543-21",
       });
 
     expect(response.statusCode).toBe(204);
 
-    const userOnDatabase = await prisma.user.findFirst({
+    const userOnDatabase = await prisma.user.findUnique({
       where: {
-        name: "New name",
-        cpf: "10987654321",
+        cpf: "109.876.543-21",
       },
     });
 

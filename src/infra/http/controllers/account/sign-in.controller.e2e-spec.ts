@@ -1,3 +1,4 @@
+import { CPF } from "@/domain/account/enterprise/entities/value-objects/cpf";
 import { AppModule } from "@/infra/app.module";
 import { DatabaseModule } from "@/infra/database/database.module";
 import { INestApplication } from "@nestjs/common";
@@ -25,12 +26,12 @@ describe("Sign in (E2E)", () => {
 
   test("[POST] /sign-in", async () => {
     await userFactory.makePrismaUser({
-      cpf: "12345678901",
+      cpf: CPF.create("123.456.789-01"),
       password: await hash("123456", 8),
     });
 
     const response = await request(app.getHttpServer()).post("/sign-in").send({
-      cpf: "12345678901",
+      cpf: "123.456.789-01",
       password: "123456",
     });
 

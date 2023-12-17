@@ -1,9 +1,9 @@
 import { PaginationParams } from "@/core/repositories/pagination-params";
-import { UsersRepository } from "@/domain/account/application/repositories/users-repository";
-import { User } from "@/domain/account/enterprise/entities/user";
+import { RecipientsRepository } from "@/domain/account/application/repositories/recipients-repository";
+import { Recipient } from "@/domain/account/enterprise/entities/recipient";
 
-export class InMemoryUsersRepository implements UsersRepository {
-  public items: User[] = [];
+export class InMemoryRecipientsRepository implements RecipientsRepository {
+  public items: Recipient[] = [];
 
   async findById(id: string) {
     const item = this.items.find((item) => item.id.toString() === id);
@@ -28,24 +28,23 @@ export class InMemoryUsersRepository implements UsersRepository {
   async findMany({ page, perPage }: PaginationParams) {
     const items = this.items
       .sort((a, b) => a.name.localeCompare(b.name))
-      .sort((a, b) => a.role.localeCompare(b.role))
       .slice((page - 1) * perPage, page * perPage);
 
     return items;
   }
 
-  async create(user: User) {
-    this.items.push(user);
+  async create(recipient: Recipient) {
+    this.items.push(recipient);
   }
 
-  async save(user: User) {
-    const itemIndex = this.items.findIndex((item) => item.id === user.id);
+  async save(recipient: Recipient) {
+    const itemIndex = this.items.findIndex((item) => item.id === recipient.id);
 
-    this.items[itemIndex] = user;
+    this.items[itemIndex] = recipient;
   }
 
-  async delete(user: User) {
-    const itemIndex = this.items.findIndex((item) => item.id === user.id);
+  async delete(recipient: Recipient) {
+    const itemIndex = this.items.findIndex((item) => item.id === recipient.id);
 
     this.items.splice(itemIndex, 1);
   }

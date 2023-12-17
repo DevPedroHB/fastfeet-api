@@ -3,6 +3,7 @@ import { AlreadyExistsError } from "@/core/errors/already-exists-error";
 import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { Injectable } from "@nestjs/common";
 import { User, UserRole } from "../../enterprise/entities/user";
+import { CPF } from "../../enterprise/entities/value-objects/cpf";
 import { Hasher } from "../cryptography/hasher";
 import { UsersRepository } from "../repositories/users-repository";
 
@@ -41,9 +42,9 @@ export class CreateUserUseCase {
       return error(new NotAllowedError());
     }
 
-    const deliveryWithSameCpf = await this.usersRepository.findByCpf(cpf);
+    const userWithSameCpf = await this.usersRepository.findByCpf(cpf);
 
-    if (deliveryWithSameCpf) {
+    if (userWithSameCpf) {
       return error(new AlreadyExistsError("User with same CPF"));
     }
 
@@ -51,7 +52,7 @@ export class CreateUserUseCase {
 
     const user = User.create({
       name,
-      cpf,
+      cpf: CPF.create(cpf),
       password: hashedPassword,
       role: role && UserRole[role],
     });

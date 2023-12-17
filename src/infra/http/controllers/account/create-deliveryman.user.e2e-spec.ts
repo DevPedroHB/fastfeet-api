@@ -42,15 +42,15 @@ describe("Create user (E2E)", () => {
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         name: "An example name",
-        cpf: "12345678901",
+        cpf: "123.456.789-01",
         password: "an-example-password",
       });
 
     expect(response.statusCode).toBe(201);
 
-    const userOnDatabase = await prisma.user.findFirst({
+    const userOnDatabase = await prisma.user.findUnique({
       where: {
-        name: "An example name",
+        cpf: "123.456.789-01",
       },
     });
 

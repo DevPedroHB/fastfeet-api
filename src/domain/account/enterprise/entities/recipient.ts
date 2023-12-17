@@ -2,22 +2,18 @@ import { Entity } from "@/core/entities/entity";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Optional } from "@/core/types/optional";
 import { CPF } from "./value-objects/cpf";
+import { RecipientAddress } from "./value-objects/recipient-address";
 
-export enum UserRole {
-  DELIVERYMAN = "DELIVERYMAN",
-  ADMINISTRATOR = "ADMINISTRATOR",
-}
-
-export interface IUser {
+export interface IRecipient {
   name: string;
   cpf: CPF;
   password: string;
-  role: UserRole;
+  address: RecipientAddress | null;
   createdAt: Date;
   updatedAt?: Date | null;
 }
 
-export class User extends Entity<IUser> {
+export class Recipient extends Entity<IRecipient> {
   get name() {
     return this.props.name;
   }
@@ -48,12 +44,12 @@ export class User extends Entity<IUser> {
     this.touch();
   }
 
-  get role() {
-    return this.props.role;
+  get address() {
+    return this.props.address;
   }
 
-  set role(role: UserRole) {
-    this.props.role = role;
+  set address(address: RecipientAddress | null) {
+    this.props.address = address;
 
     this.touch();
   }
@@ -71,18 +67,18 @@ export class User extends Entity<IUser> {
   }
 
   static create(
-    props: Optional<IUser, "role" | "createdAt">,
+    props: Optional<IRecipient, "address" | "createdAt">,
     id?: UniqueEntityID,
   ) {
-    const user = new User(
+    const recipient = new Recipient(
       {
         ...props,
-        role: props.role ?? UserRole.DELIVERYMAN,
+        address: null,
         createdAt: props.createdAt ?? new Date(),
       },
       id,
     );
 
-    return user;
+    return recipient;
   }
 }

@@ -16,7 +16,7 @@ import { z } from "zod";
 
 const createUserBodySchema = z.object({
   name: z.string().min(3),
-  cpf: z.string().min(11).max(11),
+  cpf: z.string().min(14).max(14),
   password: z.string().min(6),
   role: z.enum(["ADMINISTRATOR", "USER"]).optional(),
 });
