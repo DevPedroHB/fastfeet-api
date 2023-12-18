@@ -18,7 +18,7 @@ export function makeRecipientAddress(
     city: faker.location.city(),
     neighborhood: faker.location.country(),
     street: faker.location.street(),
-    number: faker.number.int(),
+    number: faker.number.int({ min: 1, max: 9999 }),
     latitude: coordinates[0],
     longitude: coordinates[1],
     ...override,

@@ -15,6 +15,8 @@ export class PrismaUserMapper {
         cpf: CPF.create(raw.cpf),
         password: raw.password,
         role: UserRole[raw.role],
+        createdAt: raw.createdAt,
+        updatedAt: raw.updatedAt,
       },
       new UniqueEntityID(raw.id),
     );
@@ -27,6 +29,8 @@ export class PrismaUserMapper {
       cpf: user.cpf.value,
       password: user.password,
       role: PrismaUserRole[user.role],
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     };
   }
 }

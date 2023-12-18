@@ -1,30 +1,29 @@
+import { FakeHasher } from "test/cryptography/fake-hasher";
 import { makeRecipient } from "test/factories/make-recipient";
 import { makeUser } from "test/factories/make-user";
-import { FakeLocator } from "test/location/fake-locator";
 import { InMemoryRecipientsRepository } from "test/repositories/in-memory-recipients-repository";
 import { InMemoryUsersRepository } from "test/repositories/in-memory-users-repository";
 import { UserRole } from "../../enterprise/entities/user";
-import { CPF } from "../../enterprise/entities/value-objects/cpf";
-import { EditRecipientUseCase } from "./edit-recipient";
+import { EditRecipientPasswordUseCase } from "./edit-recipient-password";
 
 let inMemoryRecipientsRepository: InMemoryRecipientsRepository;
 let inMemoryUsersRepository: InMemoryUsersRepository;
-let fakeLocator: FakeLocator;
-let sut: EditRecipientUseCase;
+let fakeHasher: FakeHasher;
+let sut: EditRecipientPasswordUseCase;
 
-describe("Edit recipient", () => {
+describe("Edit recipient password", () => {
   beforeEach(() => {
     inMemoryRecipientsRepository = new InMemoryRecipientsRepository();
     inMemoryUsersRepository = new InMemoryUsersRepository();
-    fakeLocator = new FakeLocator();
-    sut = new EditRecipientUseCase(
+    fakeHasher = new FakeHasher();
+    sut = new EditRecipientPasswordUseCase(
       inMemoryRecipientsRepository,
       inMemoryUsersRepository,
-      fakeLocator,
+      fakeHasher,
     );
   });
 
-  it("should be able to edit a recipient", async () => {
+  it("should be able to edit a recipient password", async () => {
     const administrator = makeUser({
       role: UserRole.ADMINISTRATOR,
     });
@@ -35,10 +34,7 @@ describe("Edit recipient", () => {
 
     const result = await sut.execute({
       recipientId: recipient.id.toString(),
-      name: "New name",
-      cpf: "123.456.789-01",
-      zipCode: "12345678",
-      number: 123,
+      password: "123456",
       administratorId: administrator.id.toString(),
     });
 
@@ -46,8 +42,7 @@ describe("Edit recipient", () => {
     expect(inMemoryRecipientsRepository.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          name: "New name",
-          cpf: CPF.create("123.456.789-01"),
+          password: await fakeHasher.hash("123456"),
         }),
       ]),
     );

@@ -1,5 +1,6 @@
 import { Either, error, success } from "@/core/either";
 import { NotAllowedError } from "@/core/errors/not-allowed-error";
+import { Injectable } from "@nestjs/common";
 import { Recipient } from "../../enterprise/entities/recipient";
 import { UserRole } from "../../enterprise/entities/user";
 import { RecipientsRepository } from "../repositories/recipients-repository";
@@ -18,6 +19,7 @@ type FetchRecipientsUseCaseResponse = Either<
   }
 >;
 
+@Injectable()
 export class FetchRecipientsUseCase {
   constructor(
     private recipientsRepository: RecipientsRepository,

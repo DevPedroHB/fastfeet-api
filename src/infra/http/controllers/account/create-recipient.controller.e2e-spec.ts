@@ -1,14 +1,16 @@
 import { UserRole } from "@/domain/account/enterprise/entities/user";
 import { AppModule } from "@/infra/app.module";
 import { DatabaseModule } from "@/infra/database/database.module";
+import { PrismaService } from "@/infra/database/prisma/prisma.service";
 import { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
 import request from "supertest";
 import { UserFactory } from "test/factories/make-user";
 
-describe("Get user by id (E2E)", () => {
+describe("Create recipient (E2E)", () => {
   let app: INestApplication;
+  let prisma: PrismaService;
   let userFactory: UserFactory;
   let jwt: JwtService;
 
@@ -20,31 +22,40 @@ describe("Get user by id (E2E)", () => {
 
     app = moduleRef.createNestApplication();
 
+    prisma = moduleRef.get(PrismaService);
     userFactory = moduleRef.get(UserFactory);
     jwt = moduleRef.get(JwtService);
 
     await app.init();
   });
 
-  test("[GET] /users/:id", async () => {
+  test("[POST] /recipients", async () => {
     const administrator = await userFactory.makePrismaUser({
       role: UserRole.ADMINISTRATOR,
     });
-    const user = await userFactory.makePrismaUser();
     const accessToken = jwt.sign({
       sub: administrator.id.toString(),
     });
 
     const response = await request(app.getHttpServer())
-      .get(`/users/${user.id.toString()}`)
+      .post(`/recipients`)
       .set("Authorization", `Bearer ${accessToken}`)
-      .send();
+      .send({
+        name: "An example name",
+        cpf: "123.456.789-01",
+        password: "an-example-password",
+        zipCode: "13346360",
+        number: 235,
+      });
 
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
-      user: expect.objectContaining({
-        name: user.name,
-      }),
+    expect(response.statusCode).toBe(201);
+
+    const recipientOnDatabase = await prisma.recipient.findUnique({
+      where: {
+        cpf: "123.456.789-01",
+      },
     });
+
+    expect(recipientOnDatabase).toBeTruthy();
   });
 });

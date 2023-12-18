@@ -73,7 +73,7 @@ export class Recipient extends Entity<IRecipient> {
     const recipient = new Recipient(
       {
         ...props,
-        address: null,
+        address: props.address ?? null,
         createdAt: props.createdAt ?? new Date(),
       },
       id,

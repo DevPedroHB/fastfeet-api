@@ -1,5 +1,5 @@
 import { WrongCredentialsError } from "@/core/errors/wrong-credentials-error";
-import { SignInUseCase } from "@/domain/account/application/use-cases/sign-in";
+import { SignInUserUseCase } from "@/domain/account/application/use-cases/sign-in-user";
 import { Public } from "@/infra/auth/public";
 import { ZodValidationPipe } from "@/infra/http/pipes/zod-validation.pipe";
 import {
@@ -21,9 +21,9 @@ const bodyValidationPipe = new ZodValidationPipe(signInBodySchema);
 type SignInBodySchema = z.infer<typeof signInBodySchema>;
 
 @Public()
-@Controller({ path: "/sign-in", version: "v1" })
-export class SignInController {
-  constructor(private signIn: SignInUseCase) {}
+@Controller({ path: "/users/sign-in", version: "v1" })
+export class SignInUserController {
+  constructor(private signIn: SignInUserUseCase) {}
 
   @Post()
   async handle(@Body(bodyValidationPipe) body: SignInBodySchema) {

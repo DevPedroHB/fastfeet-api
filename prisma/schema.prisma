@@ -27,3 +27,22 @@ model User {
 
   @@map("users")
 }
+
+model Recipient {
+  id           String    @id @default(uuid())
+  name         String
+  cpf          String    @unique
+  password     String
+  zipCode      String    @map("zip_code")
+  state        String
+  city         String
+  neighborhood String
+  street       String
+  number       Int
+  latitude     Float
+  longitude    Float
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime? @updatedAt @map("updated_at")
+
+  @@map("recipients")
+}

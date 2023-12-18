@@ -2,45 +2,55 @@ import { Either, error, success } from "@/core/either";
 import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { ResourceNotFoundError } from "@/core/errors/resource-not-found-error";
 import { Injectable } from "@nestjs/common";
-import { UserRole } from "../../enterprise/entities/user";
-import { RecipientsRepository } from "../repositories/recipients-repository";
+import { User, UserRole } from "../../enterprise/entities/user";
+import { Hasher } from "../cryptography/hasher";
 import { UsersRepository } from "../repositories/users-repository";
 
-interface DeleteRecipientUseCaseRequest {
-  recipientId: string;
+interface EditUserPasswordUseCaseRequest {
+  userId: string;
+  password: string;
   administratorId: string;
 }
 
-type DeleteRecipientUseCaseResponse = Either<
+type EditUserPasswordUseCaseResponse = Either<
   NotAllowedError | ResourceNotFoundError,
-  null
+  {
+    user: User;
+  }
 >;
 
 @Injectable()
-export class DeleteRecipientUseCase {
+export class EditUserPasswordUseCase {
   constructor(
-    private recipientsRepository: RecipientsRepository,
     private usersRepository: UsersRepository,
+    private hasher: Hasher,
   ) {}
 
   async execute({
-    recipientId,
+    userId,
+    password,
     administratorId,
-  }: DeleteRecipientUseCaseRequest): Promise<DeleteRecipientUseCaseResponse> {
+  }: EditUserPasswordUseCaseRequest): Promise<EditUserPasswordUseCaseResponse> {
     const administrator = await this.usersRepository.findById(administratorId);
 
     if (!administrator || administrator.role !== UserRole.ADMINISTRATOR) {
       return error(new NotAllowedError());
     }
 
-    const recipient = await this.recipientsRepository.findById(recipientId);
+    const user = await this.usersRepository.findById(userId);
 
-    if (!recipient) {
+    if (!user) {
       return error(new ResourceNotFoundError());
     }
 
-    await this.recipientsRepository.delete(recipient);
+    const hashedPassword = await this.hasher.hash(password);
 
-    return success(null);
+    user.password = hashedPassword;
+
+    await this.usersRepository.save(user);
+
+    return success({
+      user,
+    });
   }
 }

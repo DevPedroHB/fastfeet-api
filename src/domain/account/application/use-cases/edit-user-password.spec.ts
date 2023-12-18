@@ -1,19 +1,21 @@
+import { FakeHasher } from "test/cryptography/fake-hasher";
 import { makeUser } from "test/factories/make-user";
 import { InMemoryUsersRepository } from "test/repositories/in-memory-users-repository";
 import { UserRole } from "../../enterprise/entities/user";
-import { CPF } from "../../enterprise/entities/value-objects/cpf";
-import { EditUserUseCase } from "./edit-user";
+import { EditUserPasswordUseCase } from "./edit-user-password";
 
 let inMemoryUsersRepository: InMemoryUsersRepository;
-let sut: EditUserUseCase;
+let fakeHasher: FakeHasher;
+let sut: EditUserPasswordUseCase;
 
-describe("Edit user", () => {
+describe("Edit user password", () => {
   beforeEach(() => {
     inMemoryUsersRepository = new InMemoryUsersRepository();
-    sut = new EditUserUseCase(inMemoryUsersRepository);
+    fakeHasher = new FakeHasher();
+    sut = new EditUserPasswordUseCase(inMemoryUsersRepository, fakeHasher);
   });
 
-  it("should be able to edit a user", async () => {
+  it("should be able to edit a user password", async () => {
     const administrator = makeUser({
       role: UserRole.ADMINISTRATOR,
     });
@@ -24,8 +26,7 @@ describe("Edit user", () => {
 
     const result = await sut.execute({
       userId: user.id.toString(),
-      name: "New name",
-      cpf: "123.456.789-01",
+      password: "123456",
       administratorId: administrator.id.toString(),
     });
 
@@ -33,8 +34,7 @@ describe("Edit user", () => {
     expect(inMemoryUsersRepository.items).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          name: "New name",
-          cpf: CPF.create("123.456.789-01"),
+          password: await fakeHasher.hash("123456"),
         }),
       ]),
     );

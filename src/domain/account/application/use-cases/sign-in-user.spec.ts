@@ -1,23 +1,27 @@
 import { FakeHasher } from "test/cryptography/fake-hasher";
 import { makeUser } from "test/factories/make-user";
 import { InMemoryUsersRepository } from "test/repositories/in-memory-users-repository";
-import { FakeEncrypter } from "./../../../../../test/cryptography/fake-encrypter";
-import { SignInUseCase } from "./sign-in";
+import { FakeEncrypter } from "../../../../../test/cryptography/fake-encrypter";
+import { SignInUserUseCase } from "./sign-in-user";
 
 let inMemoryUsersRepository: InMemoryUsersRepository;
 let fakeHasher: FakeHasher;
 let fakeEncrypter: FakeEncrypter;
-let sut: SignInUseCase;
+let sut: SignInUserUseCase;
 
-describe("Sign in", () => {
+describe("Sign in user", () => {
   beforeEach(() => {
     inMemoryUsersRepository = new InMemoryUsersRepository();
     fakeHasher = new FakeHasher();
     fakeEncrypter = new FakeEncrypter();
-    sut = new SignInUseCase(inMemoryUsersRepository, fakeHasher, fakeEncrypter);
+    sut = new SignInUserUseCase(
+      inMemoryUsersRepository,
+      fakeHasher,
+      fakeEncrypter,
+    );
   });
 
-  it("should be able to sign in", async () => {
+  it("should be able to sign in user", async () => {
     const user = makeUser({
       password: await fakeHasher.hash("123456"),
     });

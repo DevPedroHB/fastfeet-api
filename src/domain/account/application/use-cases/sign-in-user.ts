@@ -5,12 +5,12 @@ import { Encrypter } from "../cryptography/encypter";
 import { Hasher } from "../cryptography/hasher";
 import { UsersRepository } from "../repositories/users-repository";
 
-interface SignInUseCaseRequest {
+interface SignInUserUseCaseRequest {
   cpf: string;
   password: string;
 }
 
-type SignInUseCaseResponse = Either<
+type SignInUserUseCaseResponse = Either<
   WrongCredentialsError,
   {
     token: string;
@@ -18,7 +18,7 @@ type SignInUseCaseResponse = Either<
 >;
 
 @Injectable()
-export class SignInUseCase {
+export class SignInUserUseCase {
   constructor(
     private usersRepository: UsersRepository,
     private hasher: Hasher,
@@ -28,7 +28,7 @@ export class SignInUseCase {
   async execute({
     cpf,
     password,
-  }: SignInUseCaseRequest): Promise<SignInUseCaseResponse> {
+  }: SignInUserUseCaseRequest): Promise<SignInUserUseCaseResponse> {
     const user = await this.usersRepository.findByCpf(cpf);
 
     if (!user) {

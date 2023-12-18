@@ -4,7 +4,6 @@ import { ResourceNotFoundError } from "@/core/errors/resource-not-found-error";
 import { Injectable } from "@nestjs/common";
 import { User, UserRole } from "../../enterprise/entities/user";
 import { CPF } from "../../enterprise/entities/value-objects/cpf";
-import { Hasher } from "../cryptography/hasher";
 import { UsersRepository } from "../repositories/users-repository";
 
 interface EditUserUseCaseRequest {
@@ -24,10 +23,7 @@ type EditUserUseCaseResponse = Either<
 
 @Injectable()
 export class EditUserUseCase {
-  constructor(
-    private usersRepository: UsersRepository,
-    private hasher: Hasher,
-  ) {}
+  constructor(private usersRepository: UsersRepository) {}
 
   async execute({
     userId,
