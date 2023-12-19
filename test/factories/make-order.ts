@@ -7,6 +7,9 @@ export function makeOrder(override: Partial<IOrder> = {}, id?: UniqueEntityID) {
     {
       description: faker.lorem.text(),
       recipientId: new UniqueEntityID(),
+      withdrawnAt: override.deliverymanId
+        ? faker.date.recent({ days: 7 })
+        : null,
       ...override,
     },
     id,

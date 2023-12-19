@@ -6,7 +6,31 @@ export class InMemoryOrderAttachmentsRepository
 {
   public items: OrderAttachment[] = [];
 
-  async create(attachment: OrderAttachment) {
-    this.items.push(attachment);
+  async findManyByOrderId(orderId: string) {
+    const items = this.items.filter(
+      (item) => item.orderId.toString() === orderId,
+    );
+
+    return items;
+  }
+
+  async createMany(attachments: OrderAttachment[]) {
+    this.items.push(...attachments);
+  }
+
+  async deleteMany(attachments: OrderAttachment[]) {
+    const newItems = this.items.filter((item) => {
+      return !attachments.some((attachment) => attachment.equals(item));
+    });
+
+    this.items = newItems;
+  }
+
+  async deleteManyByOrderId(orderId: string) {
+    const newItems = this.items.filter(
+      (item) => item.orderId.toString() !== orderId,
+    );
+
+    this.items = newItems;
   }
 }

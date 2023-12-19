@@ -10,6 +10,7 @@ export interface IOrder {
   withdrawnAt?: Date | null;
   deliveredAt?: Date | null;
   returnedAt?: Date | null;
+  createdAt: Date;
   recipientId: UniqueEntityID;
   deliverymanId?: UniqueEntityID | null;
 }
@@ -47,6 +48,10 @@ export class Order extends AggregateRoot<IOrder> {
     return this.props.returnedAt;
   }
 
+  get createdAt() {
+    return this.props.createdAt;
+  }
+
   get recipientId() {
     return this.props.recipientId;
   }
@@ -72,11 +77,15 @@ export class Order extends AggregateRoot<IOrder> {
     this.props.returnedAt = new Date();
   }
 
-  static create(props: Optional<IOrder, "attachments">, id?: UniqueEntityID) {
+  static create(
+    props: Optional<IOrder, "attachments" | "createdAt">,
+    id?: UniqueEntityID,
+  ) {
     const order = new Order(
       {
         ...props,
         attachments: props.attachments ?? new OrderAttachmentList(),
+        createdAt: props.createdAt ?? new Date(),
       },
       id,
     );

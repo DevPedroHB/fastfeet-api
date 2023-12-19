@@ -1,13 +1,18 @@
+import { Entity } from "@/core/entities/entity";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { Attachment, IAttachment } from "./attachment";
 
-export interface IOrderAttachment extends IAttachment {
+export interface IOrderAttachment {
   orderId: UniqueEntityID;
+  attachmentId: UniqueEntityID;
 }
 
-export class OrderAttachment extends Attachment<IOrderAttachment> {
+export class OrderAttachment extends Entity<IOrderAttachment> {
   get orderId() {
     return this.props.orderId;
+  }
+
+  get attachmentId() {
+    return this.props.attachmentId;
   }
 
   static create(props: IOrderAttachment, id?: UniqueEntityID) {
