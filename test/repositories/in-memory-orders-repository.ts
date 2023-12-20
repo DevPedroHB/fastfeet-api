@@ -82,7 +82,9 @@ export class InMemoryOrdersRepository implements OrdersRepository {
 
         return distance < MAX_DISTANCE_IN_KILOMETERS;
       })
-      .filter((item) => item.postedAt && !item.withdrawnAt);
+      .filter(
+        (item) => item.postedAt && !item.deliverymanId && !item.withdrawnAt,
+      );
 
     return items;
   }
