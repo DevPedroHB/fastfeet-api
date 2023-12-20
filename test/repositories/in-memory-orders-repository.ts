@@ -1,13 +1,19 @@
 import { PaginationParams } from "@/core/repositories/pagination-params";
-import { OrdersRepository } from "@/domain/order/application/repositories/orders-repository";
+import {
+  FindManyNearbyParams,
+  OrdersRepository,
+} from "@/domain/order/application/repositories/orders-repository";
 import { Order } from "@/domain/order/enterprise/entities/order";
+import { getDistanceBetweenCoordinates } from "test/utils/get-distance-between-coordinates";
 import { InMemoryOrderAttachmentsRepository } from "./in-memory-order-attachments-repository";
+import { InMemoryRecipientsRepository } from "./in-memory-recipients-repository";
 
 export class InMemoryOrdersRepository implements OrdersRepository {
   public items: Order[] = [];
 
   constructor(
     private orderAttachmentsRepository: InMemoryOrderAttachmentsRepository,
+    private recipientsRepository: InMemoryRecipientsRepository,
   ) {}
 
   async findById(id: string) {
@@ -40,6 +46,43 @@ export class InMemoryOrdersRepository implements OrdersRepository {
       .filter((item) => item.recipientId?.toString() === recipientId)
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice((page - 1) * perPage, page * perPage);
+
+    return items;
+  }
+
+  async findManyNearby({
+    latitude,
+    longitude,
+  }: FindManyNearbyParams): Promise<Order[]> {
+    const MAX_DISTANCE_IN_KILOMETERS = 1;
+
+    const items = this.items
+      .filter((item) => {
+        const recipient = this.recipientsRepository.items.find((recipient) =>
+          recipient.id.equals(item.recipientId),
+        );
+
+        if (!recipient) {
+          throw new Error(
+            `Recipient with ID ${item.recipientId.toString()} does not exist.`,
+          );
+        }
+
+        if (!recipient.address) {
+          throw new Error(`Recipient address not found.`);
+        }
+
+        const distance = getDistanceBetweenCoordinates(
+          { latitude, longitude },
+          {
+            latitude: recipient.address.latitude,
+            longitude: recipient.address.longitude,
+          },
+        );
+
+        return distance < MAX_DISTANCE_IN_KILOMETERS;
+      })
+      .filter((item) => item.postedAt && !item.withdrawnAt);
 
     return items;
   }

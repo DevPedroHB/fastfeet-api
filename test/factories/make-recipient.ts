@@ -26,9 +26,11 @@ export function makeRecipient(
     id,
   );
 
-  recipient.address = makeRecipientAddress({
-    recipientId: recipient.id,
-  });
+  if (!override.address) {
+    recipient.address = makeRecipientAddress({
+      recipientId: recipient.id,
+    });
+  }
 
   return recipient;
 }
