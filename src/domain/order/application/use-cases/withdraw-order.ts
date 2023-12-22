@@ -1,7 +1,7 @@
 import { Either, error, success } from "@/core/either";
-import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { ResourceNotFoundError } from "@/core/errors/resource-not-found-error";
 import { UsersRepository } from "@/domain/account/application/repositories/users-repository";
+import { Injectable } from "@nestjs/common";
 import { Order } from "../../enterprise/entities/order";
 import { OrdersRepository } from "../repositories/orders-repository";
 
@@ -11,12 +11,13 @@ interface WithdrawOrderUseCaseRequest {
 }
 
 type WithdrawOrderUseCaseResponse = Either<
-  NotAllowedError | ResourceNotFoundError,
+  ResourceNotFoundError,
   {
     order: Order;
   }
 >;
 
+@Injectable()
 export class WithdrawOrderUseCase {
   constructor(
     private ordersRepository: OrdersRepository,

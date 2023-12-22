@@ -12,9 +12,21 @@ import { GetRecipientByIdUseCase } from "@/domain/account/application/use-cases/
 import { GetUserByIdUseCase } from "@/domain/account/application/use-cases/get-user-by-id";
 import { SignInRecipientUseCase } from "@/domain/account/application/use-cases/sign-in-recipient";
 import { SignInUserUseCase } from "@/domain/account/application/use-cases/sign-in-user";
+import { CreateOrderUseCase } from "@/domain/order/application/use-cases/create-order";
+import { DeleteOrderUseCase } from "@/domain/order/application/use-cases/delete-order";
+import { DeliverOrderUseCase } from "@/domain/order/application/use-cases/deliver-order";
+import { EditOrderUseCase } from "@/domain/order/application/use-cases/edit-order";
+import { FetchDeliverymanOrdersUseCase } from "@/domain/order/application/use-cases/fetch-deliveryman-orders";
+import { FetchRecipientOrdersUseCase } from "@/domain/order/application/use-cases/fetch-recipient-orders";
+import { GetOrderByIdUseCase } from "@/domain/order/application/use-cases/get-order-by-id";
+import { PostOrderUseCase } from "@/domain/order/application/use-cases/post-order";
+import { ReturnOrderUseCase } from "@/domain/order/application/use-cases/return-order";
+import { UploadAndCreateAttachmentUseCase } from "@/domain/order/application/use-cases/upload-and-create-attachment";
+import { WithdrawOrderUseCase } from "@/domain/order/application/use-cases/withdraw-order";
 import { Module } from "@nestjs/common";
 import { CryptographyModule } from "../cryptography/cryptography.module";
 import { LocationModule } from "../location/location.module";
+import { StorageModule } from "../storage/storage.module";
 import { DatabaseModule } from "./../database/database.module";
 import { CreateRecipientController } from "./controllers/account/create-recipient.controller";
 import { CreateUserController } from "./controllers/account/create-user.controller";
@@ -30,9 +42,20 @@ import { GetRecipientByIdController } from "./controllers/account/get-recipient-
 import { GetUserByIdController } from "./controllers/account/get-user-by-id.controller";
 import { SignInRecipientController } from "./controllers/account/sign-in-recipient.controller";
 import { SignInUserController } from "./controllers/account/sign-in-user.controller";
+import { CreateOrderController } from "./controllers/order/create-order.controller";
+import { DeleteOrderController } from "./controllers/order/delete-order.controller";
+import { DeliverOrderController } from "./controllers/order/deliver-order.controller";
+import { EditOrderController } from "./controllers/order/edit-order.controller";
+import { FetchDeliverymanOrdersController } from "./controllers/order/fetch-deliveryman-orders.controller";
+import { FetchRecipientOrdersController } from "./controllers/order/fetch-recipient-orders.controller";
+import { GetOrderByIdController } from "./controllers/order/get-order-by-id.controller";
+import { PostOrderController } from "./controllers/order/post-order.controller";
+import { ReturnOrderController } from "./controllers/order/return-order.controller";
+import { UploadAttachmentController } from "./controllers/order/upload-attachment.controller";
+import { WithdrawOrderController } from "./controllers/order/withdraw-order.controller";
 
 @Module({
-  imports: [DatabaseModule, CryptographyModule, LocationModule],
+  imports: [DatabaseModule, CryptographyModule, LocationModule, StorageModule],
   controllers: [
     CreateRecipientController,
     CreateUserController,
@@ -48,6 +71,18 @@ import { SignInUserController } from "./controllers/account/sign-in-user.control
     GetUserByIdController,
     SignInRecipientController,
     SignInUserController,
+    // Order
+    CreateOrderController,
+    DeleteOrderController,
+    DeliverOrderController,
+    EditOrderController,
+    FetchDeliverymanOrdersController,
+    FetchRecipientOrdersController,
+    GetOrderByIdController,
+    PostOrderController,
+    ReturnOrderController,
+    UploadAttachmentController,
+    WithdrawOrderController,
   ],
   providers: [
     CreateRecipientUseCase,
@@ -64,6 +99,18 @@ import { SignInUserController } from "./controllers/account/sign-in-user.control
     GetUserByIdUseCase,
     SignInRecipientUseCase,
     SignInUserUseCase,
+    // Order
+    CreateOrderUseCase,
+    DeleteOrderUseCase,
+    DeliverOrderUseCase,
+    EditOrderUseCase,
+    FetchDeliverymanOrdersUseCase,
+    FetchRecipientOrdersUseCase,
+    GetOrderByIdUseCase,
+    PostOrderUseCase,
+    ReturnOrderUseCase,
+    UploadAndCreateAttachmentUseCase,
+    WithdrawOrderUseCase,
   ],
 })
 export class HttpModule {}

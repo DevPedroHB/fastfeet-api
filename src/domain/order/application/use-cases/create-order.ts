@@ -1,5 +1,4 @@
 import { Either, error, success } from "@/core/either";
-import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { ResourceNotFoundError } from "@/core/errors/resource-not-found-error";
 import { RecipientsRepository } from "@/domain/account/application/repositories/recipients-repository";
 import { Injectable } from "@nestjs/common";
@@ -12,7 +11,7 @@ interface CreateOrderUseCaseRequest {
 }
 
 type CreateOrderUseCaseResponse = Either<
-  NotAllowedError | ResourceNotFoundError,
+  ResourceNotFoundError,
   {
     order: Order;
   }

@@ -4,10 +4,12 @@ import { makeUser } from "test/factories/make-user";
 import { InMemoryAttachmentsRepository } from "test/repositories/in-memory-attachments-repository";
 import { InMemoryOrderAttachmentsRepository } from "test/repositories/in-memory-order-attachments-repository";
 import { InMemoryOrdersRepository } from "test/repositories/in-memory-orders-repository";
+import { InMemoryRecipientsRepository } from "test/repositories/in-memory-recipients-repository";
 import { InMemoryUsersRepository } from "test/repositories/in-memory-users-repository";
 import { DeliverOrderUseCase } from "./deliver-order";
 
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository;
+let inMemoryRecipientsRepository: InMemoryRecipientsRepository;
 let inMemoryOrderAttachmentsRepository: InMemoryOrderAttachmentsRepository;
 let inMemoryOrdersRepository: InMemoryOrdersRepository;
 let inMemoryUsersRepository: InMemoryUsersRepository;
@@ -18,8 +20,10 @@ describe("Deliver order", () => {
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository();
     inMemoryOrderAttachmentsRepository =
       new InMemoryOrderAttachmentsRepository();
+    inMemoryRecipientsRepository = new InMemoryRecipientsRepository();
     inMemoryOrdersRepository = new InMemoryOrdersRepository(
       inMemoryOrderAttachmentsRepository,
+      inMemoryRecipientsRepository,
     );
     inMemoryUsersRepository = new InMemoryUsersRepository();
     sut = new DeliverOrderUseCase(

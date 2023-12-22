@@ -3,6 +3,7 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { ResourceNotFoundError } from "@/core/errors/resource-not-found-error";
 import { UsersRepository } from "@/domain/account/application/repositories/users-repository";
+import { Injectable } from "@nestjs/common";
 import { Order } from "../../enterprise/entities/order";
 import { OrderAttachment } from "../../enterprise/entities/order-attachment";
 import { OrderAttachmentList } from "../../enterprise/entities/order-attachment-list";
@@ -16,12 +17,13 @@ interface DeliverOrderUseCaseRequest {
 }
 
 type DeliverOrderUseCaseResponse = Either<
-  ResourceNotFoundError,
+  ResourceNotFoundError | NotAllowedError,
   {
     order: Order;
   }
 >;
 
+@Injectable()
 export class DeliverOrderUseCase {
   constructor(
     private ordersRepository: OrdersRepository,

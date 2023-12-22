@@ -6,18 +6,19 @@ import { InMemoryRecipientsRepository } from "test/repositories/in-memory-recipi
 import { FetchRecipientOrdersUseCase } from "./fetch-recipient-orders";
 
 let inMemoryOrderAttachmentsRepository: InMemoryOrderAttachmentsRepository;
-let inMemoryOrdersRepository: InMemoryOrdersRepository;
 let inMemoryRecipientsRepository: InMemoryRecipientsRepository;
+let inMemoryOrdersRepository: InMemoryOrdersRepository;
 let sut: FetchRecipientOrdersUseCase;
 
 describe("Fetch recipient orders", () => {
   beforeEach(() => {
     inMemoryOrderAttachmentsRepository =
       new InMemoryOrderAttachmentsRepository();
+    inMemoryRecipientsRepository = new InMemoryRecipientsRepository();
     inMemoryOrdersRepository = new InMemoryOrdersRepository(
       inMemoryOrderAttachmentsRepository,
+      inMemoryRecipientsRepository,
     );
-    inMemoryRecipientsRepository = new InMemoryRecipientsRepository();
     sut = new FetchRecipientOrdersUseCase(
       inMemoryOrdersRepository,
       inMemoryRecipientsRepository,

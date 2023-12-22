@@ -3,6 +3,7 @@ import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { ResourceNotFoundError } from "@/core/errors/resource-not-found-error";
 import { UsersRepository } from "@/domain/account/application/repositories/users-repository";
 import { OrdersRepository } from "@/domain/order/application/repositories/orders-repository";
+import { Injectable } from "@nestjs/common";
 import { UserRole } from "@prisma/client";
 import { Order } from "../../enterprise/entities/order";
 
@@ -18,6 +19,7 @@ type PostOrderUseCaseResponse = Either<
   }
 >;
 
+@Injectable()
 export class PostOrderUseCase {
   constructor(
     private ordersRepository: OrdersRepository,

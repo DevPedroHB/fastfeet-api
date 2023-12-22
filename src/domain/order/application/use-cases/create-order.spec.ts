@@ -5,18 +5,19 @@ import { InMemoryRecipientsRepository } from "test/repositories/in-memory-recipi
 import { CreateOrderUseCase } from "./create-order";
 
 let inMemoryOrderAttachmentsRepository: InMemoryOrderAttachmentsRepository;
-let inMemoryOrdersRepository: InMemoryOrdersRepository;
 let inMemoryRecipientsRepository: InMemoryRecipientsRepository;
+let inMemoryOrdersRepository: InMemoryOrdersRepository;
 let sut: CreateOrderUseCase;
 
 describe("Create order", () => {
   beforeEach(() => {
     inMemoryOrderAttachmentsRepository =
       new InMemoryOrderAttachmentsRepository();
+    inMemoryRecipientsRepository = new InMemoryRecipientsRepository();
     inMemoryOrdersRepository = new InMemoryOrdersRepository(
       inMemoryOrderAttachmentsRepository,
+      inMemoryRecipientsRepository,
     );
-    inMemoryRecipientsRepository = new InMemoryRecipientsRepository();
     sut = new CreateOrderUseCase(
       inMemoryOrdersRepository,
       inMemoryRecipientsRepository,
