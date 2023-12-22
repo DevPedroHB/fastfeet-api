@@ -1,6 +1,10 @@
 import { AggregateRoot } from "@/core/entities/aggregate-root";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { Optional } from "@/core/types/optional";
+import { OrderDeliveredEvent } from "../events/order-delivered-event";
+import { OrderPostedEvent } from "../events/order-posted-event";
+import { OrderReturnedEvent } from "../events/order-returned-event";
+import { OrderWithdrawnEvent } from "../events/order-withdrawn-event";
 import { OrderAttachmentList } from "./order-attachment-list";
 
 export interface IOrder {
@@ -61,19 +65,35 @@ export class Order extends AggregateRoot<IOrder> {
   }
 
   post() {
+    if (!this.props.postedAt) {
+      this.addDomainEvent(new OrderPostedEvent(this));
+    }
+
     this.props.postedAt = new Date();
   }
 
   withdrawn(deliverymanId: UniqueEntityID) {
+    if (!this.props.withdrawnAt) {
+      this.addDomainEvent(new OrderWithdrawnEvent(this));
+    }
+
     this.props.deliverymanId = deliverymanId;
     this.props.withdrawnAt = new Date();
   }
 
   delivered() {
+    if (!this.props.deliveredAt) {
+      this.addDomainEvent(new OrderDeliveredEvent(this));
+    }
+
     this.props.deliveredAt = new Date();
   }
 
   returned() {
+    if (!this.props.returnedAt) {
+      this.addDomainEvent(new OrderReturnedEvent(this));
+    }
+
     this.props.returnedAt = new Date();
   }
 

@@ -1,3 +1,4 @@
+import { DomainEvents } from "@/core/events/domain-events";
 import { PaginationParams } from "@/core/repositories/pagination-params";
 import {
   FindManyNearbyParams,
@@ -105,6 +106,8 @@ export class InMemoryOrdersRepository implements OrdersRepository {
     await this.orderAttachmentsRepository.deleteMany(
       order.attachments.getRemovedItems(),
     );
+
+    DomainEvents.dispatchEventsForAggregate(order.id);
   }
 
   async delete(order: Order) {
