@@ -2,7 +2,6 @@ import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { EditOrderUseCase } from "@/domain/order/application/use-cases/edit-order";
 import { CurrentUser } from "@/infra/auth/current-user-decorator";
 import { UserPayload } from "@/infra/auth/jwt.strategy";
-import { ZodValidationPipe } from "@/infra/http/pipes/zod-validation.pipe";
 import {
   BadRequestException,
   Body,
@@ -12,16 +11,14 @@ import {
   Put,
   UnauthorizedException,
 } from "@nestjs/common";
-import { z } from "zod";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {
+  EditOrderBodyDto,
+  editOrderBodyPipe,
+} from "../../dtos/order/edit-order.dto";
 
-const editOrderBodySchema = z.object({
-  description: z.string(),
-});
-
-const bodyValidationPipe = new ZodValidationPipe(editOrderBodySchema);
-
-type EditOrderBodySchema = z.infer<typeof editOrderBodySchema>;
-
+@ApiTags("orders")
+@ApiBearerAuth("token")
 @Controller({ path: "/orders/:id", version: "v1" })
 export class EditOrderController {
   constructor(private editOrder: EditOrderUseCase) {}
@@ -29,7 +26,7 @@ export class EditOrderController {
   @Put()
   @HttpCode(204)
   async handle(
-    @Body(bodyValidationPipe) body: EditOrderBodySchema,
+    @Body(editOrderBodyPipe) body: EditOrderBodyDto,
     @CurrentUser() user: UserPayload,
     @Param("id") orderId: string,
   ) {

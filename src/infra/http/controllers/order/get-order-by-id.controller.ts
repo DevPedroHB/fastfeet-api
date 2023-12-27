@@ -1,7 +1,10 @@
 import { GetOrderByIdUseCase } from "@/domain/order/application/use-cases/get-order-by-id";
 import { BadRequestException, Controller, Get, Param } from "@nestjs/common";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { OrderPresenter } from "../../presenters/order-presenter";
 
+@ApiTags("orders")
+@ApiBearerAuth("token")
 @Controller({ path: "/orders/:id", version: "v1" })
 export class GetOrderByIdController {
   constructor(private getOrderById: GetOrderByIdUseCase) {}

@@ -2,7 +2,6 @@ import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { EditUserUseCase } from "@/domain/account/application/use-cases/edit-user";
 import { CurrentUser } from "@/infra/auth/current-user-decorator";
 import { UserPayload } from "@/infra/auth/jwt.strategy";
-import { ZodValidationPipe } from "@/infra/http/pipes/zod-validation.pipe";
 import {
   BadRequestException,
   Body,
@@ -12,18 +11,14 @@ import {
   Put,
   UnauthorizedException,
 } from "@nestjs/common";
-import { z } from "zod";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {
+  EditUserBodyDto,
+  editUserBodyPipe,
+} from "../../dtos/account/edit-user.dto";
 
-const editUserBodySchema = z.object({
-  name: z.string().min(3),
-  cpf: z.string().min(14).max(14),
-  role: z.enum(["ADMINISTRATOR", "USER"]).optional(),
-});
-
-const bodyValidationPipe = new ZodValidationPipe(editUserBodySchema);
-
-type EditUserBodySchema = z.infer<typeof editUserBodySchema>;
-
+@ApiTags("users")
+@ApiBearerAuth("token")
 @Controller({ path: "/users/:id", version: "v1" })
 export class EditUserController {
   constructor(private editUser: EditUserUseCase) {}
@@ -31,7 +26,7 @@ export class EditUserController {
   @Put()
   @HttpCode(204)
   async handle(
-    @Body(bodyValidationPipe) body: EditUserBodySchema,
+    @Body(editUserBodyPipe) body: EditUserBodyDto,
     @CurrentUser() user: UserPayload,
     @Param("id") userId: string,
   ) {

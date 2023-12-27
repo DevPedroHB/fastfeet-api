@@ -1,7 +1,6 @@
 import { WrongCredentialsError } from "@/core/errors/wrong-credentials-error";
 import { SignInUserUseCase } from "@/domain/account/application/use-cases/sign-in-user";
 import { Public } from "@/infra/auth/public";
-import { ZodValidationPipe } from "@/infra/http/pipes/zod-validation.pipe";
 import {
   BadRequestException,
   Body,
@@ -9,24 +8,20 @@ import {
   Post,
   UnauthorizedException,
 } from "@nestjs/common";
-import { z } from "zod";
+import { ApiTags } from "@nestjs/swagger";
+import {
+  SignInUserBodyDto,
+  signInUserBodyPipe,
+} from "../../dtos/account/sign-in-user.dto";
 
-const signInBodySchema = z.object({
-  cpf: z.string().min(14).max(14),
-  password: z.string().min(6),
-});
-
-const bodyValidationPipe = new ZodValidationPipe(signInBodySchema);
-
-type SignInBodySchema = z.infer<typeof signInBodySchema>;
-
+@ApiTags("users")
 @Public()
 @Controller({ path: "/users/sign-in", version: "v1" })
 export class SignInUserController {
   constructor(private signIn: SignInUserUseCase) {}
 
   @Post()
-  async handle(@Body(bodyValidationPipe) body: SignInBodySchema) {
+  async handle(@Body(signInUserBodyPipe) body: SignInUserBodyDto) {
     const { cpf, password } = body;
 
     const result = await this.signIn.execute({

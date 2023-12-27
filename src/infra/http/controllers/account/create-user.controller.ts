@@ -3,7 +3,6 @@ import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { CreateUserUseCase } from "@/domain/account/application/use-cases/create-user";
 import { CurrentUser } from "@/infra/auth/current-user-decorator";
 import { UserPayload } from "@/infra/auth/jwt.strategy";
-import { ZodValidationPipe } from "@/infra/http/pipes/zod-validation.pipe";
 import {
   BadRequestException,
   Body,
@@ -12,26 +11,21 @@ import {
   Post,
   UnauthorizedException,
 } from "@nestjs/common";
-import { z } from "zod";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {
+  CreateUserBodyDto,
+  createUserBodyPipe,
+} from "../../dtos/account/create-user.dto";
 
-const createUserBodySchema = z.object({
-  name: z.string().min(3),
-  cpf: z.string().min(14).max(14),
-  password: z.string().min(6),
-  role: z.enum(["ADMINISTRATOR", "USER"]).optional(),
-});
-
-const bodyValidationPipe = new ZodValidationPipe(createUserBodySchema);
-
-type CreateUserBodySchema = z.infer<typeof createUserBodySchema>;
-
+@ApiTags("users")
+@ApiBearerAuth("token")
 @Controller({ path: "/users", version: "v1" })
 export class CreateUserController {
   constructor(private createUser: CreateUserUseCase) {}
 
   @Post()
   async handle(
-    @Body(bodyValidationPipe) body: CreateUserBodySchema,
+    @Body(createUserBodyPipe) body: CreateUserBodyDto,
     @CurrentUser() user: UserPayload,
   ) {
     const { name, cpf, password, role } = body;

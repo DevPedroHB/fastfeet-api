@@ -1,25 +1,22 @@
 import { CreateOrderUseCase } from "@/domain/order/application/use-cases/create-order";
 import { CurrentUser } from "@/infra/auth/current-user-decorator";
 import { UserPayload } from "@/infra/auth/jwt.strategy";
-import { ZodValidationPipe } from "@/infra/http/pipes/zod-validation.pipe";
 import { BadRequestException, Body, Controller, Post } from "@nestjs/common";
-import { z } from "zod";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {
+  CreateOrderBodyDto,
+  createOrderBodyPipe,
+} from "../../dtos/order/create-order.dto";
 
-const createOrderBodySchema = z.object({
-  description: z.string(),
-});
-
-const bodyValidationPipe = new ZodValidationPipe(createOrderBodySchema);
-
-type CreateOrderBodySchema = z.infer<typeof createOrderBodySchema>;
-
+@ApiTags("orders")
+@ApiBearerAuth("token")
 @Controller({ path: "/orders", version: "v1" })
 export class CreateOrderController {
   constructor(private createOrder: CreateOrderUseCase) {}
 
   @Post()
   async handle(
-    @Body(bodyValidationPipe) body: CreateOrderBodySchema,
+    @Body(createOrderBodyPipe) body: CreateOrderBodyDto,
     @CurrentUser() user: UserPayload,
   ) {
     const { description } = body;

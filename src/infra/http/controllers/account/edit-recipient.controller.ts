@@ -2,7 +2,6 @@ import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { EditRecipientUseCase } from "@/domain/account/application/use-cases/edit-recipient";
 import { CurrentUser } from "@/infra/auth/current-user-decorator";
 import { UserPayload } from "@/infra/auth/jwt.strategy";
-import { ZodValidationPipe } from "@/infra/http/pipes/zod-validation.pipe";
 import {
   BadRequestException,
   Body,
@@ -12,19 +11,14 @@ import {
   Put,
   UnauthorizedException,
 } from "@nestjs/common";
-import { z } from "zod";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {
+  EditRecipientBodyDto,
+  editRecipientBodyPipe,
+} from "../../dtos/account/edit-recipient.dto";
 
-const editRecipientBodySchema = z.object({
-  name: z.string().min(3),
-  cpf: z.string().min(14).max(14),
-  zipCode: z.string().min(8).max(8),
-  number: z.coerce.number(),
-});
-
-const bodyValidationPipe = new ZodValidationPipe(editRecipientBodySchema);
-
-type EditRecipientBodySchema = z.infer<typeof editRecipientBodySchema>;
-
+@ApiTags("recipients")
+@ApiBearerAuth("token")
 @Controller({ path: "/recipients/:id", version: "v1" })
 export class EditRecipientController {
   constructor(private editRecipient: EditRecipientUseCase) {}
@@ -32,7 +26,7 @@ export class EditRecipientController {
   @Put()
   @HttpCode(204)
   async handle(
-    @Body(bodyValidationPipe) body: EditRecipientBodySchema,
+    @Body(editRecipientBodyPipe) body: EditRecipientBodyDto,
     @CurrentUser() user: UserPayload,
     @Param("id") recipientId: string,
   ) {

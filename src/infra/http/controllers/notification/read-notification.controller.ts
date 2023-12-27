@@ -10,7 +10,10 @@ import {
   Patch,
   UnauthorizedException,
 } from "@nestjs/common";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
+@ApiTags("notifications")
+@ApiBearerAuth("token")
 @Controller({ path: "/notifications/:id", version: "v1" })
 export class ReadNotificationController {
   constructor(private readNotification: ReadNotificationUseCase) {}

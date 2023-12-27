@@ -3,7 +3,6 @@ import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { CreateRecipientUseCase } from "@/domain/account/application/use-cases/create-recipient";
 import { CurrentUser } from "@/infra/auth/current-user-decorator";
 import { UserPayload } from "@/infra/auth/jwt.strategy";
-import { ZodValidationPipe } from "@/infra/http/pipes/zod-validation.pipe";
 import {
   BadRequestException,
   Body,
@@ -12,27 +11,21 @@ import {
   Post,
   UnauthorizedException,
 } from "@nestjs/common";
-import { z } from "zod";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {
+  CreateRecipientBodyDto,
+  createRecipientBodyPipe,
+} from "../../dtos/account/create-recipient.dto";
 
-const createRecipientBodySchema = z.object({
-  name: z.string().min(3),
-  cpf: z.string().min(14).max(14),
-  password: z.string().min(6),
-  zipCode: z.string().min(8).max(8),
-  number: z.coerce.number(),
-});
-
-const bodyValidationPipe = new ZodValidationPipe(createRecipientBodySchema);
-
-type CreateRecipientBodySchema = z.infer<typeof createRecipientBodySchema>;
-
+@ApiTags("recipients")
+@ApiBearerAuth("token")
 @Controller({ path: "/recipients", version: "v1" })
 export class CreateRecipientController {
   constructor(private createRecipient: CreateRecipientUseCase) {}
 
   @Post()
   async handle(
-    @Body(bodyValidationPipe) body: CreateRecipientBodySchema,
+    @Body(createRecipientBodyPipe) body: CreateRecipientBodyDto,
     @CurrentUser() user: UserPayload,
   ) {
     const { name, cpf, password, zipCode, number } = body;

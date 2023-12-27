@@ -10,7 +10,10 @@ import {
   Patch,
   UnauthorizedException,
 } from "@nestjs/common";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
+@ApiTags("orders")
+@ApiBearerAuth("token")
 @Controller({ path: "/orders/:id/post", version: "v1" })
 export class PostOrderController {
   constructor(private postOrder: PostOrderUseCase) {}

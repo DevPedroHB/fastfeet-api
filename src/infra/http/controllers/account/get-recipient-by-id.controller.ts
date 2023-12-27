@@ -9,8 +9,11 @@ import {
   Param,
   UnauthorizedException,
 } from "@nestjs/common";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { RecipientPresenter } from "../../presenters/recipient-presenter";
 
+@ApiTags("recipients")
+@ApiBearerAuth("token")
 @Controller({ path: "/recipients/:id", version: "v1" })
 export class GetRecipientByIdController {
   constructor(private getRecipientById: GetRecipientByIdUseCase) {}

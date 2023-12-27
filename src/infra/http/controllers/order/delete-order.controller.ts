@@ -10,7 +10,10 @@ import {
   Param,
   UnauthorizedException,
 } from "@nestjs/common";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
+@ApiTags("orders")
+@ApiBearerAuth("token")
 @Controller({ path: "/orders/:id", version: "v1" })
 export class DeleteOrderController {
   constructor(private deleteOrder: DeleteOrderUseCase) {}

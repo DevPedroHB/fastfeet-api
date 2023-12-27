@@ -2,7 +2,6 @@ import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { EditUserPasswordUseCase } from "@/domain/account/application/use-cases/edit-user-password";
 import { CurrentUser } from "@/infra/auth/current-user-decorator";
 import { UserPayload } from "@/infra/auth/jwt.strategy";
-import { ZodValidationPipe } from "@/infra/http/pipes/zod-validation.pipe";
 import {
   BadRequestException,
   Body,
@@ -12,16 +11,14 @@ import {
   Put,
   UnauthorizedException,
 } from "@nestjs/common";
-import { z } from "zod";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {
+  EditUserPasswordBodyDto,
+  editUserPasswordBodyPipe,
+} from "../../dtos/account/edit-user-password.dto";
 
-const editUserPasswordBodySchema = z.object({
-  password: z.string().min(6),
-});
-
-const bodyValidationPipe = new ZodValidationPipe(editUserPasswordBodySchema);
-
-type EditUserPasswordBodySchema = z.infer<typeof editUserPasswordBodySchema>;
-
+@ApiTags("users")
+@ApiBearerAuth("token")
 @Controller({ path: "/users/:id/change-password", version: "v1" })
 export class EditUserPasswordController {
   constructor(private editUserPassword: EditUserPasswordUseCase) {}
@@ -29,7 +26,7 @@ export class EditUserPasswordController {
   @Put()
   @HttpCode(204)
   async handle(
-    @Body(bodyValidationPipe) body: EditUserPasswordBodySchema,
+    @Body(editUserPasswordBodyPipe) body: EditUserPasswordBodyDto,
     @CurrentUser() user: UserPayload,
     @Param("id") userId: string,
   ) {

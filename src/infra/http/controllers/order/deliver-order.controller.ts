@@ -2,7 +2,6 @@ import { NotAllowedError } from "@/core/errors/not-allowed-error";
 import { DeliverOrderUseCase } from "@/domain/order/application/use-cases/deliver-order";
 import { CurrentUser } from "@/infra/auth/current-user-decorator";
 import { UserPayload } from "@/infra/auth/jwt.strategy";
-import { ZodValidationPipe } from "@/infra/http/pipes/zod-validation.pipe";
 import {
   BadRequestException,
   Body,
@@ -12,16 +11,14 @@ import {
   Patch,
   UnauthorizedException,
 } from "@nestjs/common";
-import { z } from "zod";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {
+  DeliverOrderBodyDto,
+  deliverOrderBodyPipe,
+} from "../../dtos/order/deliver-order.dto";
 
-const deliverOrderBodySchema = z.object({
-  attachmentsIds: z.array(z.string().uuid()),
-});
-
-const bodyValidationPipe = new ZodValidationPipe(deliverOrderBodySchema);
-
-type DeliverOrderBodySchema = z.infer<typeof deliverOrderBodySchema>;
-
+@ApiTags("orders")
+@ApiBearerAuth("token")
 @Controller({ path: "/orders/:id/deliver", version: "v1" })
 export class DeliverOrderController {
   constructor(private deliverOrder: DeliverOrderUseCase) {}
@@ -29,7 +26,7 @@ export class DeliverOrderController {
   @Patch()
   @HttpCode(204)
   async handle(
-    @Body(bodyValidationPipe) body: DeliverOrderBodySchema,
+    @Body(deliverOrderBodyPipe) body: DeliverOrderBodyDto,
     @CurrentUser() user: UserPayload,
     @Param("id") orderId: string,
   ) {

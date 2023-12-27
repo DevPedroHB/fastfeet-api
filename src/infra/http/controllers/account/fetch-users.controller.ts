@@ -9,21 +9,15 @@ import {
   Query,
   UnauthorizedException,
 } from "@nestjs/common";
-import { z } from "zod";
-import { ZodValidationPipe } from "../../pipes/zod-validation.pipe";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {
+  FetchUsersQueryDto,
+  fetchUsersQueryPipe,
+} from "../../dtos/account/fetch-users.dto";
 import { UserPresenter } from "../../presenters/user-presenter";
 
-const pageQuerySchema = z
-  .string()
-  .optional()
-  .default("1")
-  .transform(Number)
-  .pipe(z.number().min(1));
-
-const queryValidationPipe = new ZodValidationPipe(pageQuerySchema);
-
-type PageQuerySchema = z.infer<typeof pageQuerySchema>;
-
+@ApiTags("users")
+@ApiBearerAuth("token")
 @Controller({ path: "/users", version: "v1" })
 export class FetchUsersController {
   constructor(private fetchUsers: FetchUsersUseCase) {}
@@ -31,12 +25,14 @@ export class FetchUsersController {
   @Get()
   async handle(
     @CurrentUser() user: UserPayload,
-    @Query("page", queryValidationPipe) page: PageQuerySchema,
+    @Query(fetchUsersQueryPipe) query: FetchUsersQueryDto,
   ) {
+    const { page, perPage } = query;
+
     const result = await this.fetchUsers.execute({
       administratorId: user.sub,
       page,
-      perPage: 20,
+      perPage,
     });
 
     if (result.isError()) {

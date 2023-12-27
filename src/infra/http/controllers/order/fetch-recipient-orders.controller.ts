@@ -2,21 +2,15 @@ import { FetchRecipientOrdersUseCase } from "@/domain/order/application/use-case
 import { CurrentUser } from "@/infra/auth/current-user-decorator";
 import { UserPayload } from "@/infra/auth/jwt.strategy";
 import { BadRequestException, Controller, Get, Query } from "@nestjs/common";
-import { z } from "zod";
-import { ZodValidationPipe } from "../../pipes/zod-validation.pipe";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {
+  FetchRecipientOrdersQueryDto,
+  fetchRecipientOrdersQueryPipe,
+} from "../../dtos/order/fetch-recipient-orders.dto";
 import { OrderPresenter } from "../../presenters/order-presenter";
 
-const pageQuerySchema = z
-  .string()
-  .optional()
-  .default("1")
-  .transform(Number)
-  .pipe(z.number().min(1));
-
-const queryValidationPipe = new ZodValidationPipe(pageQuerySchema);
-
-type PageQuerySchema = z.infer<typeof pageQuerySchema>;
-
+@ApiTags("orders")
+@ApiBearerAuth("token")
 @Controller({ path: "/recipient/orders", version: "v1" })
 export class FetchRecipientOrdersController {
   constructor(private fetchRecipientOrders: FetchRecipientOrdersUseCase) {}
@@ -24,12 +18,14 @@ export class FetchRecipientOrdersController {
   @Get()
   async handle(
     @CurrentUser() user: UserPayload,
-    @Query("page", queryValidationPipe) page: PageQuerySchema,
+    @Query(fetchRecipientOrdersQueryPipe) query: FetchRecipientOrdersQueryDto,
   ) {
+    const { page, perPage } = query;
+
     const result = await this.fetchRecipientOrders.execute({
       recipientId: user.sub,
       page,
-      perPage: 20,
+      perPage,
     });
 
     if (result.isError()) {

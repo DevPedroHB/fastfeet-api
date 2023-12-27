@@ -18,7 +18,7 @@ export async function fabricateUser({
   const l = 10;
 
   for (let i = 0; i < randomInt(l, l * 2); i++) {
-    const hashedPassword = await hash(faker.internet.password(), 8);
+    const hashedPassword = await hash("123456", 8);
 
     const user = await client.user.create({
       data: {

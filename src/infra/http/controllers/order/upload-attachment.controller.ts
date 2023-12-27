@@ -11,7 +11,10 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
+@ApiTags("attachments")
+@ApiBearerAuth("token")
 @Controller({ path: "/attachments", version: "v1" })
 export class UploadAttachmentController {
   constructor(

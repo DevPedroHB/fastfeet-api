@@ -8,7 +8,10 @@ import {
   Param,
   Patch,
 } from "@nestjs/common";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
+@ApiTags("orders")
+@ApiBearerAuth("token")
 @Controller({ path: "/orders/:id/return", version: "v1" })
 export class ReturnOrderController {
   constructor(private returnOrder: ReturnOrderUseCase) {}
