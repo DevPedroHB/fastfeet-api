@@ -8,6 +8,11 @@ import {
   User,
 } from "@prisma/client";
 import { hash } from "bcryptjs";
+import { fabricateAttachment } from "./factories/fabricate-attachment";
+import { fabricateNotification } from "./factories/fabricate-notification";
+import { fabricateOrder } from "./factories/fabricate-order";
+import { fabricateRecipient } from "./factories/fabricate-recipient";
+import { fabricateUser } from "./factories/fabricate-user";
 
 const client = new PrismaClient();
 const faker = new Faker({
@@ -57,11 +62,11 @@ async function run() {
     },
   });
 
-  // await fabricateUser({ client, faker, factory });
-  // await fabricateRecipient({ client, faker, factory });
-  // await fabricateOrder({ client, faker, factory });
-  // await fabricateAttachment({ client, faker, factory });
-  // await fabricateNotification({ client, factory });
+  await fabricateUser({ client, faker, factory });
+  await fabricateRecipient({ client, faker, factory });
+  await fabricateOrder({ client, faker, factory });
+  await fabricateAttachment({ client, faker, factory });
+  await fabricateNotification({ client, factory });
 }
 
 run()
