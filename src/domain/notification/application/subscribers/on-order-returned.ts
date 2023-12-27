@@ -1,8 +1,10 @@
 import { DomainEvents } from "@/core/events/domain-events";
 import { EventHandler } from "@/core/events/event-handler";
 import { OrderReturnedEvent } from "@/domain/order/enterprise/events/order-returned-event";
+import { Injectable } from "@nestjs/common";
 import { SendNotificationUseCase } from "../use-cases/send-notification";
 
+@Injectable()
 export class OnOrderReturned implements EventHandler {
   constructor(private sendNotification: SendNotificationUseCase) {
     this.setupSubscriptions();

@@ -1,3 +1,4 @@
+import { DomainEvents } from "@/core/events/domain-events";
 import { PaginationParams } from "@/core/repositories/pagination-params";
 import { OrderAttachmentsRepository } from "@/domain/order/application/repositories/order-attachments-repository";
 import {
@@ -140,6 +141,8 @@ export class PrismaOrdersRepository implements OrdersRepository {
     ]);
 
     await this.cache.delete(`order:${data.id}`);
+
+    DomainEvents.dispatchEventsForAggregate(order.id);
   }
 
   async delete(order: Order) {

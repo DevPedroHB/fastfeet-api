@@ -8,7 +8,7 @@ import { Injectable } from "@nestjs/common";
 export function makeOrder(override: Partial<IOrder> = {}, id?: UniqueEntityID) {
   const order = Order.create(
     {
-      description: faker.lorem.text(),
+      description: faker.commerce.product(),
       recipientId: new UniqueEntityID(),
       withdrawnAt: override.deliverymanId
         ? faker.date.recent({ days: 7 })

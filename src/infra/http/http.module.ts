@@ -12,6 +12,7 @@ import { GetRecipientByIdUseCase } from "@/domain/account/application/use-cases/
 import { GetUserByIdUseCase } from "@/domain/account/application/use-cases/get-user-by-id";
 import { SignInRecipientUseCase } from "@/domain/account/application/use-cases/sign-in-recipient";
 import { SignInUserUseCase } from "@/domain/account/application/use-cases/sign-in-user";
+import { ReadNotificationUseCase } from "@/domain/notification/application/use-cases/read-notification";
 import { CreateOrderUseCase } from "@/domain/order/application/use-cases/create-order";
 import { DeleteOrderUseCase } from "@/domain/order/application/use-cases/delete-order";
 import { DeliverOrderUseCase } from "@/domain/order/application/use-cases/deliver-order";
@@ -42,6 +43,7 @@ import { GetRecipientByIdController } from "./controllers/account/get-recipient-
 import { GetUserByIdController } from "./controllers/account/get-user-by-id.controller";
 import { SignInRecipientController } from "./controllers/account/sign-in-recipient.controller";
 import { SignInUserController } from "./controllers/account/sign-in-user.controller";
+import { ReadNotificationController } from "./controllers/notification/read-notification.controller";
 import { CreateOrderController } from "./controllers/order/create-order.controller";
 import { DeleteOrderController } from "./controllers/order/delete-order.controller";
 import { DeliverOrderController } from "./controllers/order/deliver-order.controller";
@@ -83,6 +85,8 @@ import { WithdrawOrderController } from "./controllers/order/withdraw-order.cont
     ReturnOrderController,
     UploadAttachmentController,
     WithdrawOrderController,
+    // Notification
+    ReadNotificationController,
   ],
   providers: [
     CreateRecipientUseCase,
@@ -111,6 +115,8 @@ import { WithdrawOrderController } from "./controllers/order/withdraw-order.cont
     ReturnOrderUseCase,
     UploadAndCreateAttachmentUseCase,
     WithdrawOrderUseCase,
+    // Notification
+    ReadNotificationUseCase,
   ],
 })
 export class HttpModule {}

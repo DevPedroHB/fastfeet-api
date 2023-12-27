@@ -35,7 +35,7 @@ export async function fabricateOrder({
 
     const order = await client.order.create({
       data: {
-        description: faker.lorem.text(),
+        description: faker.commerce.product(),
         recipientId: faker.helpers.arrayElement(factory.recipients).id,
         postedAt,
         withdrawnAt,

@@ -7,7 +7,6 @@ export interface INotification {
   content: string;
   readAt?: Date | null;
   createdAt: Date;
-  updatedAt?: Date | null;
   recipientId: UniqueEntityID;
 }
 
@@ -28,16 +27,8 @@ export class Notification extends Entity<INotification> {
     return this.props.createdAt;
   }
 
-  get updatedAt() {
-    return this.props.updatedAt;
-  }
-
   get recipientId() {
     return this.props.recipientId;
-  }
-
-  private touch() {
-    this.props.updatedAt = new Date();
   }
 
   read() {

@@ -1,16 +1,13 @@
 import { Faker, en, pt_BR } from "@faker-js/faker";
 import {
   Attachment,
+  Notification,
   Order,
   PrismaClient,
   Recipient,
   User,
 } from "@prisma/client";
 import { hash } from "bcryptjs";
-import { fabricateAttachment } from "./factories/fabricate-attachment";
-import { fabricateOrder } from "./factories/fabricate-order";
-import { fabricateRecipient } from "./factories/fabricate-recipient";
-import { fabricateUser } from "./factories/fabricate-user";
 
 const client = new PrismaClient();
 const faker = new Faker({
@@ -22,6 +19,7 @@ export type Factory = {
   recipients: Recipient[];
   orders: Order[];
   attachments: Attachment[];
+  notifications: Notification[];
 };
 
 interface Tabela {
@@ -34,6 +32,7 @@ async function run() {
     recipients: [],
     orders: [],
     attachments: [],
+    notifications: [],
   };
   const tabelas: Tabela[] = await client.$queryRaw`
     SELECT tablename
@@ -58,10 +57,11 @@ async function run() {
     },
   });
 
-  await fabricateUser({ client, faker, factory });
-  await fabricateRecipient({ client, faker, factory });
-  await fabricateOrder({ client, faker, factory });
-  await fabricateAttachment({ client, faker, factory });
+  // await fabricateUser({ client, faker, factory });
+  // await fabricateRecipient({ client, faker, factory });
+  // await fabricateOrder({ client, faker, factory });
+  // await fabricateAttachment({ client, faker, factory });
+  // await fabricateNotification({ client, factory });
 }
 
 run()
